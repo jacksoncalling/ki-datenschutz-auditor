@@ -1,0 +1,18 @@
+{
+  "_comment": "Single source of truth for the deterministic auditor (checks.py). To point the eval at another reference set or language, edit this file only.",
+  "reference_dir": "../reference",
+  "reference_files": {
+    "dsgvo": "dsgvo-artikel.md",
+    "dsk": "dsk-oh-ki.md",
+    "state": "dsg-nrw.md"
+  },
+  "severities": ["CLEAR PASS", "NARROW FLAG", "CLEAR FAIL"],
+  "required_checks": ["PS-0", "PS-1", "PS-2", "PS-3", "PS-4"],
+  "requires_open_decision": ["NARROW FLAG", "CLEAR FAIL"],
+  "open_decision_marker": "Offene Entscheidung",
+  "count_line_labels": {
+    "CLEAR PASS": "CLEAR PASS",
+    "NARROW FLAG": "NARROW FLAG",
+    "CLEAR FAIL": "CLEAR FAIL"
+  }
+}
