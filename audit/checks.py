@@ -129,23 +129,11 @@ def parse_key(path):
 
 # ---------- run ----------
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("report")
-    ap.add_argument("--key")
-    ap.add_argument("--report", dest="out")
-    ap.add_argument("--conventions", default=None)
-    args = ap.parse_args()
-
-    base = os.path.dirname(os.path.abspath(__file__))
-    conv_path = args.conventions or os.path.join(base, "conventions.json")
-    conv = load_conventions(conv_path)
-
-    valid = valid_ids_from_reference(conv, base)
-    counts, findings = parse_report(args.report)
+def evaluate(report_path, key_path, conv, valid):
+    """Run all gates on one report. Returns (ok, gates, findings)."""
+    counts, findings = parse_report(report_path)
 
     gates = []  # (name, ok, detail)
-    advisory = []
 
     # G1 coverage
     present = {f["ps"] for f in findings}
@@ -184,33 +172,104 @@ def main():
                   else f"Kopf={counts} vs. tatsächlich={actual}"))
 
     # G7 key match (optional)
-    key_gate = None
-    if args.key:
-        expected = parse_key(args.key)
+    if key_path:
+        expected = parse_key(key_path)
         mism = []
         for f in findings:
             exp = expected.get(f["ps"])
             if exp and exp != f["class"]:
                 mism.append(f"{f['ps']}: erwartet {exp}, erhalten {f['class']}")
-        key_gate = ("key-match", not mism,
-                    "Klassen entsprechen dem Schlüssel" if not mism else "; ".join(mism))
-        gates.append(key_gate)
+        gates.append(("key-match", not mism,
+                      "Klassen entsprechen dem Schlüssel" if not mism else "; ".join(mism)))
 
     ok = all(g[1] for g in gates)
+    return ok, gates, findings
 
-    lines = []
-    lines.append(f"# Auditor-Eval-Report: {os.path.basename(args.report)}")
-    lines.append("")
-    lines.append(f"Valide Zitat-IDs in reference/: {len(valid)}  ·  Befunde im Bericht: {len(findings)}")
-    lines.append("")
-    lines.append("| Gate | Ergebnis | Detail |")
-    lines.append("|---|---|---|")
+def render(report_path, valid, ok, gates, findings):
+    lines = [f"# Auditor-Eval-Report: {os.path.basename(report_path)}", "",
+             f"Valide Zitat-IDs in reference/: {len(valid)}  ·  Befunde im Bericht: {len(findings)}",
+             "", "| Gate | Ergebnis | Detail |", "|---|---|---|"]
     for name, passed, detail in gates:
         lines.append(f"| {name} | {'PASS' if passed else 'FAIL'} | {detail} |")
     lines.append("")
     lines.append(f"**Gesamt: {'PASS' if ok else 'FAIL'}**")
-    out = "\n".join(lines) + "\n"
+    return "\n".join(lines) + "\n"
 
+def run_all(base, conv, valid):
+    """Run every real report against its key, plus the planted-defect fixture
+    (which MUST fail). This is the one command a stranger can run to see the
+    whole eval at once."""
+    rep_dir = os.path.join(base, "reports")
+    key_dir = os.path.join(base, "keys")
+    rows, all_ok = [], True
+    for name in sorted(os.listdir(rep_dir)):
+        if not name.endswith(".report.md"):
+            continue
+        stem = name[:-len(".report.md")]
+        key = os.path.join(key_dir, stem + ".key.md")
+        key = key if os.path.exists(key) else None
+        ok, _, _ = evaluate(os.path.join(rep_dir, name), key, conv, valid)
+        rows.append((name, ok, True))          # expected to pass
+        all_ok = all_ok and ok
+    # planted defect: expected to FAIL, so it "passes the suite" when it fails
+    planted = os.path.join(base, "fixtures", "planted-defect.report.md")
+    if os.path.exists(planted):
+        ok, _, _ = evaluate(planted, None, conv, valid)
+        rows.append(("planted-defect.report.md (muss FAIL sein)", ok, False))
+        all_ok = all_ok and (not ok)
+    print("# Auditor-Eval: Gesamtlauf\n")
+    print(f"Valide Zitat-IDs in reference/: {len(valid)}\n")
+    print("| Bericht | erwartet | Ergebnis | ok? |")
+    print("|---|---|---|---|")
+    for name, ok, expect_pass in rows:
+        got = "PASS" if ok else "FAIL"
+        want = "PASS" if expect_pass else "FAIL"
+        good = (ok == expect_pass)
+        print(f"| {name} | {want} | {got} | {'✓' if good else '✗'} |")
+    print(f"\n**Suite: {'PASS' if all_ok else 'FAIL'}**")
+    return all_ok
+
+USAGE = """KI-Datenschutz-Auditor -- eval (checks.py)
+
+Ein Bericht wird gegen reference/ geprüft: Abdeckung, Severity, auflösbare
+Zitate, Offene-Entscheidung-Zeilen, ehrliche Kopfzahlen.
+
+Das eine, was ein Prüfer sofort laufen lassen kann:
+    python audit/checks.py --all
+
+Einzelnen Bericht prüfen:
+    python audit/checks.py audit/reports/03-clear-fail.report.md
+    python audit/checks.py audit/reports/03-clear-fail.report.md --key audit/keys/03-clear-fail.key.md
+"""
+
+def main():
+    # print UTF-8 regardless of the platform's default console encoding
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+    ap = argparse.ArgumentParser(add_help=True, usage=USAGE)
+    ap.add_argument("report", nargs="?")
+    ap.add_argument("--all", action="store_true", help="run every report + fixture at once")
+    ap.add_argument("--key")
+    ap.add_argument("--report", dest="out")
+    ap.add_argument("--conventions", default=None)
+    args = ap.parse_args()
+
+    base = os.path.dirname(os.path.abspath(__file__))
+    conv_path = args.conventions or os.path.join(base, "conventions.json")
+    conv = load_conventions(conv_path)
+    valid = valid_ids_from_reference(conv, base)
+
+    if args.all:
+        sys.exit(0 if run_all(base, conv, valid) else 1)
+
+    if not args.report:
+        print(USAGE)
+        sys.exit(0)
+
+    ok, gates, findings = evaluate(args.report, args.key, conv, valid)
+    out = render(args.report, valid, ok, gates, findings)
     if args.out:
         with open(args.out, "w", encoding="utf-8") as f:
             f.write(out)
