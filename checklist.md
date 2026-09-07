@@ -26,7 +26,7 @@ If the tool clearly processes no personal data, record that and stop the whole a
 
 - **CLEAR FAIL:** the system issues decisions with legal or similarly significant effect on individuals with no human in the loop (e.g. auto-sends rejections). Cite the DSK example verbatim from `[DSK-OH-1.6]`. For a fully automated Verwaltungsakt: FAIL unless the dossier shows a *gebundene Entscheidung* with an express legal basis (§ 35a VwVfG), because with Ermessen the fully automated route is barred (`[DSK-OH-1.6]`).
 - **NARROW FLAG:** a human is nominally involved but the dossier suggests only *formelle Beteiligung* (rubber-stamp), or the Entscheidungsspielraum is not described. The DSK is explicit that a merely formal human role is not enough (`[DSK-OH-1.6]`).
-- **CLEAR PASS:** documented genuine human review with real discretion, and safeguards per `[DSGVO-Art22-3]` (right to obtain human intervention, to state one's view, to contest).
+- **CLEAR PASS:** documented genuine human review with real discretion. Where the system does make or materially drive an Art. 22 decision, the Art. 22(3) safeguards must also be present (`[DSGVO-Art22-3]`: right to obtain human intervention, to state one's view, to contest). Where the system makes no Art. 22 decision at all (it only drafts and a human decides), Art. 22(3) is not engaged and its absence is not a gap.
 
 ---
 
@@ -54,8 +54,8 @@ If the tool clearly processes no personal data, record that and stop the whole a
 
 ## [PS-4] Transparenz und Erklärbarkeit
 
-**Tests:** `[DSGVO-Art13-1]`, `[DSK-OH-1.8]`
-**Evidence needed:** whether the vendor provides documentation of the system's *Logik* (Funktionsweise) sufficient for the municipality to meet its Art. 12 ff. information duties to citizens, including a plain-language management summary.
+**Tests:** `[DSGVO-Art13-2f]` (the "involvierte Logik" duty proper), `[DSGVO-Art13-1]` (the general information duty), `[DSK-OH-1.8]`
+**Evidence needed:** whether the vendor provides documentation of the system's *Logik* (Funktionsweise) sufficient for the municipality to meet its Art. 12 ff. information duties to citizens, including a plain-language management summary. The specific "aussagekräftige Informationen über die involvierte Logik" obligation lives in Art. 13(2)(f); cite it as the primary anchor for the logic point, `[DSGVO-Art13-1]` for the base information duty.
 
 - **CLEAR FAIL:** a decision-relevant system with no explainability documentation at all, so the municipality cannot answer citizen information requests. Contradicts the Art. 13 duty the municipality cannot discharge without vendor input (`[DSK-OH-1.8]`).
 - **NARROW FLAG:** some technical documentation exists but no citizen-facing plain-language explanation of the logic, scope, and possible effects (`[DSK-OH-1.8]`).

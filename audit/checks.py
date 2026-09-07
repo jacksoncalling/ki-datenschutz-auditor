@@ -81,6 +81,35 @@ def normalize_id(raw):
     # strip spaces; unify. Accept DSGVO-Art22-1, DSK-OH-1.9, DSG-NRW-§46-1
     return raw.strip()
 
+def reference_integrity(conv, base):
+    """Guard against a quiet failure of our own mechanism: a citation ID
+    resolves because its heading exists, but the section has no body to quote.
+    Returns a list of heading-only sections. (Found by the cold run: Art. 44
+    was a heading with an empty body.)"""
+    ref_dir = os.path.normpath(os.path.join(base, conv["reference_dir"]))
+    empty = []
+    for fname in conv["reference_files"].values():
+        path = os.path.join(ref_dir, fname)
+        if not os.path.exists(path):
+            continue
+        lines = open(path, encoding="utf-8").read().split("\n")
+        idxs = [i for i, l in enumerate(lines) if l.startswith("## ")]
+        for k, start in enumerate(idxs):
+            end = idxs[k + 1] if k + 1 < len(idxs) else len(lines)
+            body = []
+            for l in lines[start + 1:end]:
+                s = l.strip()
+                if not s:
+                    continue
+                if s.startswith("_") and s.endswith("_"):   # subtitle line
+                    continue
+                s = s.lstrip(">").strip()                    # drop blockquote marker
+                if s:
+                    body.append(s)
+            if len(" ".join(body)) < 20:
+                empty.append(f"{fname}: {lines[start].strip()}")
+    return empty
+
 def parse_report(path):
     text = open(path, encoding="utf-8").read()
     # header counts
@@ -202,6 +231,8 @@ def run_all(base, conv, valid):
     rep_dir = os.path.join(base, "reports")
     key_dir = os.path.join(base, "keys")
     rows, all_ok = [], True
+    # reference integrity first: every cited section must have a body to quote
+    empty_sections = reference_integrity(conv, base)
     for name in sorted(os.listdir(rep_dir)):
         if not name.endswith(".report.md"):
             continue
@@ -217,15 +248,26 @@ def run_all(base, conv, valid):
         ok, _, _ = evaluate(planted, None, conv, valid)
         rows.append(("planted-defect.report.md (muss FAIL sein)", ok, False))
         all_ok = all_ok and (not ok)
+    ref_ok = not empty_sections
+    all_ok = all_ok and ref_ok
     print("# Auditor-Eval: Gesamtlauf\n")
     print(f"Valide Zitat-IDs in reference/: {len(valid)}\n")
+    print("## Referenz-Integrität")
+    if ref_ok:
+        print("Alle zitierbaren Abschnitte in reference/ haben einen Textkörper. PASS\n")
+    else:
+        print("FAIL: Abschnitte ohne Textkörper (Überschrift ohne zitierbaren Inhalt):")
+        for e in empty_sections:
+            print(f"  - {e}")
+        print()
+    print("## Berichte")
     print("| Bericht | erwartet | Ergebnis | ok? |")
     print("|---|---|---|---|")
     for name, ok, expect_pass in rows:
         got = "PASS" if ok else "FAIL"
         want = "PASS" if expect_pass else "FAIL"
         good = (ok == expect_pass)
-        print(f"| {name} | {want} | {got} | {'✓' if good else '✗'} |")
+        print(f"| {name} | {want} | {got} | {'ok' if good else 'X'} |")
     print(f"\n**Suite: {'PASS' if all_ok else 'FAIL'}**")
     return all_ok
 
