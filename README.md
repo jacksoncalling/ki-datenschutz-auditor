@@ -72,6 +72,14 @@ The common case is not a city auditing a stranger; it is a **Kommune and a start
 
 This is a rendering, not a re-audit: `reference/`, `checklist.md`, the classes and the citations stay single-homed, and the machine-checkable single-column report underneath still passes `audit/`. See `perspectives.md` for the format and `demo/platform-report.md` for a worked both-sides example.
 
+To turn a both-sides report into a forwardable HTML one-pager (a founder or a Kommune can be shown the page directly), run the small template-based renderer:
+
+```bash
+python render/render.py demo/platform-report.md   # writes demo/platform-report.html
+```
+
+The page's content is parsed from the markdown, not hand-written, so it stays a translation of the report. See `render/README.md`.
+
 ## Scaling to other Bundesländer
 
 The whole design is built so this is cheap. To audit for, say, Bayern instead of NRW:

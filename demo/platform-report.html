@@ -1,0 +1,216 @@
+<title>KI-Datenschutz-Vorprüfung</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Spectral:wght@500;600&display=swap">
+<style>
+  :root{
+    --paper:#F1F3F7; --surface:#FFFFFF; --surface-2:#F7F8FB;
+    --ink:#1A2233; --muted:#626C80; --faint:#8A93A5;
+    --line:#E1E5EC; --line-strong:#D2D8E2;
+    --accent:#2A4A7F; --accent-soft:#3E6FB0;
+    --pass:#2E7D5B; --pass-bg:#E8F1EC; --pass-line:#BFDCCD;
+    --flag:#A9711A; --flag-bg:#F6EEDC; --flag-line:#E7D3A6;
+    --fail:#B0453C; --fail-bg:#F7E6E3; --fail-line:#EBC5BF;
+    --shadow:0 1px 2px rgba(20,30,50,.05), 0 6px 22px rgba(20,30,50,.06);
+    --radius:12px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --paper:#0E1218; --surface:#161B23; --surface-2:#1B212B;
+      --ink:#E7EAF1; --muted:#9AA3B4; --faint:#727C90;
+      --line:#28303C; --line-strong:#333C4A;
+      --accent:#5183C4; --accent-soft:#7AA4DA;
+      --pass:#5CBB8D; --pass-bg:#16271F; --pass-line:#2C4B3B;
+      --flag:#D6A24E; --flag-bg:#271F12; --flag-line:#463A22;
+      --fail:#DB7C71; --fail-bg:#291917; --fail-line:#492E2A;
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 6px 22px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0E1218; --surface:#161B23; --surface-2:#1B212B;
+    --ink:#E7EAF1; --muted:#9AA3B4; --faint:#727C90;
+    --line:#28303C; --line-strong:#333C4A;
+    --accent:#5183C4; --accent-soft:#7AA4DA;
+    --pass:#5CBB8D; --pass-bg:#16271F; --pass-line:#2C4B3B;
+    --flag:#D6A24E; --flag-bg:#271F12; --flag-line:#463A22;
+    --fail:#DB7C71; --fail-bg:#291917; --fail-line:#492E2A;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 6px 22px rgba(0,0,0,.35);
+  }
+
+  *{box-sizing:border-box}
+  body{background:var(--paper); color:var(--ink);
+    font-family:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    line-height:1.5; -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:860px; margin:0 auto; padding:clamp(20px,4vw,52px) clamp(16px,4vw,40px) 64px}
+
+  .eyebrow{font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; color:var(--accent-soft); font-weight:600}
+  h1{font-family:"Spectral",Georgia,serif; font-weight:600;
+    font-size:clamp(1.9rem,4.4vw,2.7rem); line-height:1.08; margin:.35rem 0 0;
+    letter-spacing:-.01em; text-wrap:balance;}
+  .parties{font-family:"Spectral",Georgia,serif; font-size:clamp(1.05rem,2.4vw,1.28rem);
+    color:var(--ink); margin-top:.9rem; font-weight:500;}
+  .parties .sw{color:var(--accent-soft); padding:0 .35em; font-weight:600}
+  .parties .role{display:block; font-family:"IBM Plex Sans",sans-serif; font-size:.72rem;
+    letter-spacing:.1em; text-transform:uppercase; color:var(--faint); font-weight:600; margin-top:.15rem}
+  .meta{margin-top:1.1rem; padding-top:1rem; border-top:1px solid var(--line);
+    display:flex; flex-wrap:wrap; gap:.35rem 1.4rem; font-size:.83rem; color:var(--muted);}
+  .meta b{color:var(--ink); font-weight:600}
+
+  .status{margin-top:1.6rem; background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--radius); box-shadow:var(--shadow); padding:clamp(18px,3vw,26px);}
+  .status-head{display:flex; justify-content:space-between; align-items:baseline; gap:1rem; flex-wrap:wrap}
+  .tally{display:flex; gap:1.3rem; font-size:.86rem; color:var(--muted); font-variant-numeric:tabular-nums}
+  .tally b{font-family:"Spectral",serif; font-size:1.35rem; font-weight:600; color:var(--ink); margin-right:.28rem}
+  .tally .p b{color:var(--pass)} .tally .f b{color:var(--flag)} .tally .k b{color:var(--fail)}
+  .strip{display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin:18px 0 4px}
+  .seg{height:8px; border-radius:99px; background:var(--line-strong)}
+  .seg.pass{background:var(--pass)} .seg.flag{background:var(--flag)} .seg.fail{background:var(--fail)}
+  .strip-labels{display:grid; grid-template-columns:repeat(5,1fr); gap:6px;
+    font-family:"IBM Plex Mono",monospace; font-size:.66rem; color:var(--faint); letter-spacing:.02em}
+  .verdict{margin-top:16px; font-family:"Spectral",serif; font-size:1.06rem; line-height:1.4; color:var(--ink)}
+  .verdict .lead{color:var(--accent-soft); font-weight:600}
+
+  .findings{margin-top:14px; display:flex; flex-direction:column; gap:14px}
+  .sec-label{font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; color:var(--faint); font-weight:600; margin:34px 0 -2px}
+  .row{position:relative; background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--radius); padding:18px 20px 18px 26px; overflow:hidden;
+    transition:box-shadow .18s ease, transform .18s ease;}
+  .row:hover{box-shadow:var(--shadow); transform:translateY(-1px)}
+  .row::before{content:""; position:absolute; left:0; top:0; bottom:0; width:5px}
+  .row.pass::before{background:var(--pass)} .row.flag::before{background:var(--flag)} .row.fail::before{background:var(--fail)}
+  .row-head{display:flex; align-items:flex-start; justify-content:space-between; gap:14px; flex-wrap:wrap}
+  .ps{font-weight:600; font-size:1.02rem; color:var(--ink)}
+  .ps .num{font-family:"IBM Plex Mono",monospace; color:var(--faint); font-weight:500; font-size:.85em; margin-right:.5em}
+  .pill{flex:none; font-size:.7rem; font-weight:600; letter-spacing:.05em; text-transform:uppercase;
+    padding:.28em .7em; border-radius:99px; white-space:nowrap; border:1px solid transparent;}
+  .pill.pass{color:var(--pass); background:var(--pass-bg); border-color:var(--pass-line)}
+  .pill.flag{color:var(--flag); background:var(--flag-bg); border-color:var(--flag-line)}
+  .pill.fail{color:var(--fail); background:var(--fail-bg); border-color:var(--fail-line)}
+  .cites{margin-top:8px; display:flex; flex-wrap:wrap; gap:6px}
+  .cite{font-family:"IBM Plex Mono",monospace; font-size:.73rem; color:var(--accent);
+    background:var(--surface-2); border:1px solid var(--line); border-radius:6px; padding:.14em .5em}
+  .cols{display:grid; grid-template-columns:1fr 1fr; gap:1px; margin-top:16px;
+    background:var(--line); border:1px solid var(--line); border-radius:9px; overflow:hidden}
+  .col{background:var(--surface); padding:13px 15px}
+  .col .who{font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; font-weight:600; margin-bottom:5px; display:flex; align-items:center; gap:.5em}
+  .col.kommune .who{color:var(--accent-soft)}
+  .col.anbieter .who{color:var(--muted)}
+  .col .who::before{content:""; width:7px; height:7px; border-radius:2px; display:inline-block}
+  .col.kommune .who::before{background:var(--accent-soft)}
+  .col.anbieter .who::before{background:var(--faint)}
+  .col p{margin:0; font-size:.9rem; color:var(--ink)}
+  .row.pass .col p{color:var(--muted)}
+
+  footer{margin-top:40px; padding-top:22px; border-top:1px solid var(--line); font-size:.8rem; color:var(--muted); line-height:1.55}
+  footer .note{background:var(--surface-2); border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin-bottom:18px}
+  footer .note b{color:var(--ink)}
+  .sig{display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:baseline}
+  .sig .brand{font-family:"Spectral",serif; color:var(--ink); font-weight:600}
+  .sig a{color:var(--accent-soft); text-decoration:none}
+  .demo-tag{font-family:"IBM Plex Mono",monospace; font-size:.68rem; color:var(--flag);
+    background:var(--flag-bg); border:1px solid var(--flag-line); border-radius:6px; padding:.2em .6em; letter-spacing:.02em}
+  a:focus-visible, .row:focus-visible{outline:2px solid var(--accent-soft); outline-offset:2px}
+  @media (max-width:600px){ .cols{grid-template-columns:1fr} .row-head{flex-direction:column} }
+  @media (prefers-reduced-motion:reduce){ .row{transition:none} }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Datenschutz-Vorprüfung · Angebot ↔ Nachfrage</div>
+    <h1>Deal-Vorprüfung</h1>
+    <div class="parties">
+      OfficeAssist 365<span class="role">Nordlicht Software GmbH · Anbieter</span>
+      <span class="sw">↔</span>
+      Stadtverwaltung<span class="role">NRW · Auftraggeber</span>
+    </div>
+    <div class="meta">
+      <span>Geprüft gegen DSGVO + DSK-Orientierungshilfe KI (06.05.2024) + DSG NRW</span>
+      <span>Stand <b>2026-09-08</b></span>
+      <span>Aufsicht <b>LDI NRW</b></span>
+      <span class="demo-tag">Musterbericht · fiktives Beispiel</span>
+    </div>
+  </header>
+
+  <section class="status" aria-label="Deal-Reifegrad">
+    <div class="status-head">
+      <div class="eyebrow" style="color:var(--muted)">Deal-Reifegrad · beide Seiten</div>
+      <div class="tally">
+        <span class="p"><b>1</b>erfüllt</span>
+        <span class="f"><b>4</b>Klärungen</span>
+        <span class="k"><b>0</b>K.-o.</span>
+      </div>
+    </div>
+    <div class="strip" aria-hidden="true"><div class="seg flag"></div><div class="seg pass"></div><div class="seg flag"></div><div class="seg flag"></div><div class="seg flag"></div></div>
+    <div class="strip-labels" aria-hidden="true"><span>PS-0</span><span>PS-1</span><span>PS-2</span><span>PS-3</span><span>PS-4</span></div>
+    <p class="verdict"><span class="lead">Kein K.-o.-Kriterium.</span> Der Deal ist tragfähig; mit vier belegbaren Nachweisen des Anbieters und den passenden Anforderungen der Kommune ist der AVV unterschriftsreif.</p>
+  </section>
+
+  <div class="sec-label">Befunde · 5 Prüfschritte, beidseitig</div>
+  <div class="findings">
+    <article class="row flag" tabindex="0">
+      <div class="row-head">
+        <div class="ps"><span class="num">PS-0</span>Schwelle und DSFA-Pflicht</div>
+        <span class="pill flag">Narrow Flag</span>
+      </div>
+      <div class="cites"><span class="cite">DSGVO-Art35-1</span><span class="cite">DSK-OH-2.3</span></div>
+      <div class="cols">
+        <div class="col kommune"><div class="who">Kommune · nächste Handlung</div><p>DSFA-Pflicht anhand der Muss-Liste der LDI NRW feststellen und die nötigen Systeminformationen anfordern.</p></div>
+        <div class="col anbieter"><div class="who">Anbieter · nächster Nachweis</div><p>DSFA aktiv unterstützen und die Funktionsbeschreibung zuliefern, nicht nur &quot;empfehlen&quot;.</p></div>
+      </div>
+    </article>
+    <article class="row pass" tabindex="0">
+      <div class="row-head">
+        <div class="ps"><span class="num">PS-1</span>Menschliche Letztentscheidung</div>
+        <span class="pill pass">Clear Pass</span>
+      </div>
+      <div class="cites"><span class="cite">DSGVO-Art22-1</span><span class="cite">DSK-OH-1.6</span></div>
+      <div class="cols">
+        <div class="col kommune"><div class="who">Kommune</div><p>Erfüllt. Den dokumentierten Prüf- und Freigabeschritt in der Dienstanweisung verankern.</p></div>
+        <div class="col anbieter"><div class="who">Anbieter</div><p>Erfüllt. Zusicherung beibehalten: System entscheidet nicht, versendet nichts eigenständig.</p></div>
+      </div>
+    </article>
+    <article class="row flag" tabindex="0">
+      <div class="row-head">
+        <div class="ps"><span class="num">PS-2</span>Auftragsverarbeitung und Datenstandort</div>
+        <span class="pill flag">Narrow Flag</span>
+      </div>
+      <div class="cites"><span class="cite">DSGVO-Art28-2</span><span class="cite">DSGVO-Art44</span><span class="cite">DSK-OH-2.1</span></div>
+      <div class="cols">
+        <div class="col kommune"><div class="who">Kommune · nächste Handlung</div><p>Vollständige Unterauftragnehmerliste einholen und den Fernzugriff der US-Muttergesellschaft samt Übermittlungsmechanismus klären.</p></div>
+        <div class="col anbieter"><div class="who">Anbieter · nächster Nachweis</div><p>Aktuelles Unterauftragnehmer-Verzeichnis beilegen; US-Konzern-Fernzugriff offenlegen und den Kapitel-V-Mechanismus (z. B. SCC) benennen.</p></div>
+      </div>
+    </article>
+    <article class="row flag" tabindex="0">
+      <div class="row-head">
+        <div class="ps"><span class="num">PS-3</span>Trainingsverbot und Voreinstellungen</div>
+        <span class="pill flag">Narrow Flag</span>
+      </div>
+      <div class="cites"><span class="cite">DSK-OH-1.9</span><span class="cite">DSK-OH-2.5</span></div>
+      <div class="cols">
+        <div class="col kommune"><div class="who">Kommune · nächste Handlung</div><p>Den Trainingsausschluss und den Default der Eingabe-Historie schriftlich bestätigen lassen.</p></div>
+        <div class="col anbieter"><div class="who">Anbieter · nächster Nachweis</div><p>Die (starke) Trainingsausschluss-Klausel um die Eingabe-Historie ergänzen und Default-off dokumentieren.</p></div>
+      </div>
+    </article>
+    <article class="row flag" tabindex="0">
+      <div class="row-head">
+        <div class="ps"><span class="num">PS-4</span>Transparenz und Erklärbarkeit</div>
+        <span class="pill flag">Narrow Flag</span>
+      </div>
+      <div class="cites"><span class="cite">DSGVO-Art13-2f</span><span class="cite">DSK-OH-1.8</span></div>
+      <div class="cols">
+        <div class="col kommune"><div class="who">Kommune · nächste Handlung</div><p>Eine bürgerverständliche Logik-Erläuterung für Auskünfte nach Art. 13/15 bereithalten.</p></div>
+        <div class="col anbieter"><div class="who">Anbieter · nächster Nachweis</div><p>Eine allgemeinverständliche Erläuterung der involvierten Logik (Art. 13(2)(f)) liefern, nicht nur die technische Doku.</p></div>
+      </div>
+    </article>
+  </div>
+
+  <footer>
+    <div class="note">
+      <b>Was diese Vorprüfung leistet.</b> Sie prüft, was die Unterlagen aussagen, nicht ob das laufende System es tut. Für den Anbieter ist das genau der Wert: was ist zu dokumentieren und zuzusichern. Für die Kommune ist es der Anfang der Sorgfaltsprüfung, nicht das Ende. Die verantwortliche Person auf jeder Seite entscheidet; die Prüfung ersetzt sie nicht, sie beschleunigt sie von Tagen auf Minuten.
+    </div>
+    <div class="sig">
+      <span>Jeder Befund verweist auf eine konkrete Vorschrift, die beide Seiten nachlesen können.</span>
+      <span><span class="brand">Step Into More</span> · Joshua Baker · <a href="https://www.stepintomore.co">stepintomore.co</a></span>
+    </div>
+  </footer>
+</div>
