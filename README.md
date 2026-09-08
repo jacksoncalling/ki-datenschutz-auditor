@@ -104,6 +104,10 @@ An auditor you cannot check is just an opinion generator. `audit/` is a two-laye
 
 See `audit/README.md` to run it.
 
+## The evidence: a full test → correct → re-test loop
+
+`demo/stepintomore-loop/` is the strongest proof the auditor discriminates. A cold agent audited a real dossier and returned 1 pass + 4 flags; each flagged gap was then closed in the documents; a fresh cold agent re-audited the corrected set and returned **5 of 5 CLEAR PASS**, verified by `checks.py`. The flags were real *and* closable, and the auditor recognises the fix instead of flagging forever. The expectation was frozen before the re-run, and the second cold agent ran the audit on its own output. See `demo/stepintomore-loop/README.md`.
+
 ## Honesty about scope
 
 This is a preliminary-check accelerator, not legal advice and not a compliance guarantee. It reads what a dossier says; it cannot verify that a vendor does what it claims. A real pilot must involve the municipality's Datenschutzbeauftragte(r) and, where relevant, a full DSFA. The auditor's value is speed and structure on the shared core, so the scarce human hours go to the genuinely contested calls.

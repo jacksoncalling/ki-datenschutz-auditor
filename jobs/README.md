@@ -18,4 +18,6 @@ The run flow that fills this in is in `rules.md` ("Run flow and where to save").
 
 ## Confidentiality
 
-Real submitted documents are vendor/municipality confidential. **Everything under `jobs/` is git-ignored except this README and `_template/`,** so real input documents and real reports never enter the public repository. Do not force-add a real job folder. The synthetic worked example that ships with the repo lives in `demo/`, not here.
+Real submitted documents are vendor/municipality confidential. **Everything under `jobs/` is git-ignored except this README and `_template/`,** so real input documents and real reports never enter the public repository. Do not force-add a real job folder.
+
+**Publishable vs confidential is a location choice, not a gitignore exception.** If a run is safe to publish (your own synthetic data, or evidence for a submission), copy it into `demo/` (which is tracked), the way `demo/stepintomore-loop/` was. Keep `jobs/` for confidential real-client work only. That way the ignore rule stays simple and never has to be poked with per-folder exceptions.
