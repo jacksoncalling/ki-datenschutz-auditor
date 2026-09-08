@@ -8,9 +8,9 @@ Drop this folder into a Claude project (or point any capable agent at it). Claud
 
 ## The problem it solves
 
-Germany has 16 states, 16 state data-protection laws, and 16 supervisory authorities, all interpreting the same DSGVO. When a vendor sells one AI tool to many municipalities, each municipality's data-protection officer redoes the same preliminary audit from scratch, 3 to 5 days each. This is the bottleneck the report behind this project names: *"Durch den Föderalismus bedingte unterschiedliche Datenschutzbestimmungen verursachen redundante Datenschutzprüfungen bei gleichem Sachverhalt."*
+Germany has 16 states, 16 state data-protection laws, and 16 supervisory authorities, all interpreting the same DSGVO. When a vendor sells one AI tool to many municipalities, each municipality's data-protection officer redoes the same preliminary audit from scratch, 3 to 5 days each. This is the bottleneck the report behind this project names: data-protection rules that differ from one federal state to the next cause redundant data-protection audits of the very same set of facts.
 
-The fix is the principle **"Einer prüft für alle"**: the shared, identical core of the check (DSGVO + the joint DSK guidance) is done once and travels; only the state-specific layer is re-checked. This auditor is a working prototype of that idea, aimed at cutting the preliminary check from 3 to 5 days to 15 to 30 minutes so the human officer starts from a map instead of a blank page.
+The fix is the principle of **auditing once and reusing everywhere** ("one audits for all"): the shared, identical core of the check (DSGVO plus the joint DSK guidance) is done once and travels; only the state-specific layer is re-checked. This auditor is a working prototype of that idea, aimed at cutting the preliminary check from 3 to 5 days to 15 to 30 minutes so the human officer starts from a map instead of a blank page.
 
 ## What it checks against (the standard is in `reference/`)
 
@@ -25,8 +25,8 @@ Not a summary. The actual standard, verbatim, so any finding is verifiable:
 
 An **AI-vendor deployment dossier** for a municipality. Ideally:
 
-- the **Auftragsverarbeitungsvertrag (AVV / DPA)**,
-- the **technisch-organisatorische Maßnahmen (TOMs)**,
+- the **data processing agreement (AVV)**,
+- the **technical and organizational measures (TOMs)**,
 - a **system / architecture description**, and
 - the **product terms** (especially anything about model training and data location).
 
@@ -72,11 +72,11 @@ When you operate this folder on real documents, follow the **run flow** in `rule
 
 ## Two sides of the same audit (platform mode)
 
-The common case is not a city auditing a stranger; it is a **Kommune and a startup already trying to work together**, both needing the same contract to reach signature (several Agentic-AI-Hub pilot applicants were exactly such pairs). So the audit can be rendered from both sides at once: one dossier, one set of findings and citations, one severity per check, but two next-action columns, what the **Kommune** must require or clarify, and what the **Anbieter** must document or contractually secure. A NARROW FLAG becomes a concrete task for exactly one party; the audit turns into a shared punch-list to signature instead of a verdict handed down.
+The common case is not a city auditing a stranger; it is a **Community and a startup already trying to work together**, both needing the same contract to reach signature (several Agentic-AI-Hub pilot applicants were exactly such pairs). So the audit can be rendered from both sides at once: one dossier, one set of findings and citations, one severity per check, but two next-action columns, what the **Community** must require or clarify, and what the **service provider** must document or contractually secure. A NARROW FLAG becomes a concrete task for exactly one party; the audit turns into a shared punch-list to signature instead of a verdict handed down.
 
 This is a rendering, not a re-audit: `reference/`, `checklist.md`, the classes and the citations stay single-homed, and the machine-checkable single-column report underneath still passes `audit/`. See `perspectives.md` for the format and `demo/platform-report.md` for a worked both-sides example.
 
-To turn a both-sides report into a forwardable HTML one-pager (a founder or a Kommune can be shown the page directly), run the small template-based renderer:
+To turn a both-sides report into a forwardable HTML one-pager (a founder or a Community can be shown the page directly), run the small template-based renderer:
 
 ```bash
 python render/render.py demo/platform-report.md   # writes demo/platform-report.html
@@ -84,14 +84,14 @@ python render/render.py demo/platform-report.md   # writes demo/platform-report.
 
 The page's content is parsed from the markdown, not hand-written, so it stays a translation of the report. See `render/README.md`.
 
-## Scaling to other Bundesländer
+## Scaling to other states (Bundesländer)
 
 The whole design is built so this is cheap. To audit for, say, Bayern instead of NRW:
 
-1. Replace `reference/dsg-nrw.md` with the equivalent Landesdatenschutzgesetz excerpt and the competent authority (there, the BayLDA / LfD Bayern).
+1. Replace `reference/dsg-nrw.md` with the equivalent state data-protection act (Landesdatenschutzgesetz) excerpt and the competent authority (there, the BayLDA / LfD Bayern).
 2. Update the "state layer" section name in `checklist.md`.
 
-Nothing in PS-0 through PS-4 changes, because that core is DSGVO plus the all-German DSK guidance. That is "Einer prüft für alle" made literal: the shared check is written once and reused; only the delta moves.
+Nothing in PS-0 through PS-4 changes, because that core is DSGVO plus the all-German DSK guidance. That is "one audits for all" made literal: the shared check is written once and reused; only the delta moves.
 
 ## Verifying this auditor (`audit/`)
 
@@ -107,6 +107,8 @@ See `audit/README.md` to run it.
 ## The evidence: a full test → correct → re-test loop
 
 `demo/stepintomore-loop/` is the strongest proof the auditor discriminates. A cold agent audited a real dossier and returned 1 pass + 4 flags; each flagged gap was then closed in the documents; a fresh cold agent re-audited the corrected set and returned **5 of 5 CLEAR PASS**, verified by `checks.py`. The flags were real *and* closable, and the auditor recognises the fix instead of flagging forever. The expectation was frozen before the re-run, and the second cold agent ran the audit on its own output. See `demo/stepintomore-loop/README.md`.
+
+`demo/retest/` is the same corrected set re-audited in the **two-sided platform format** (Community column + service-provider column), with its own frozen method and passing eval. Its job is to show `audit/checks.py` validates that format too, not just the single-column report. See `demo/retest/README.md`.
 
 ## Honesty about scope
 
