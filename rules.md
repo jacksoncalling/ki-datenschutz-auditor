@@ -16,13 +16,15 @@ The order of the audit, how findings cite the standard, how severity is decided,
 
 ## Run flow and where to save (do all of it, in order)
 
-When you operate this folder on real documents, the audit is not the last step, and it is not optional. A report you produce but never check is exactly what this tool exists to prevent. Do all of this:
+When you operate this folder on real documents, the audit is not the last step, and it is not optional. A report you produce but never check is exactly what this tool exists to prevent. One job = one vendor, one date, one folder that keeps the submitted and the created files together. Do all of this:
 
-1. **Read** the vendor documents you were given.
-2. **Produce the report.** Either the single-column format defined below, or the two-sided platform format in `perspectives.md`. Both are accepted.
-3. **Audit your own output.** Run `python audit/checks.py <your-report.md>`. It validates both formats: coverage, valid severities, that every citation resolves against `reference/`, open decisions present, and honest counts. If any gate fails, fix the report and rerun. **Never hand over a report that fails its own auditor.** (This is the step a cold run skipped; it is the one that makes the result trustworthy.)
-4. **Render the page.** Run `python render/render.py <your-report.md> -o output/<name>.html` (add `--demo` for a synthetic or example report). This turns the report into the forwardable one-pager automatically; do not hand-build the HTML.
-5. **Save to `output/`.** Put both the `.md` report and the `.html` page in the `output/` folder, named for the vendor and date (e.g. `output/<anbieter>-<YYYY-MM-DD>.md`). Do not leave results in a scratch directory.
+1. **Open a job folder.** Copy `jobs/_template/` to `jobs/<anbieter>-<YYYY-MM-DD>/` and put the submitted documents in its `input/`. Never audit documents that live only in the chat; save them first, so the report can be re-checked against them later.
+2. **Read** the documents in `input/`.
+3. **Produce `report.md`** in the job folder. Either the single-column format defined below, or the two-sided platform format in `perspectives.md`. Both are accepted.
+4. **Audit your own output.** Run `python audit/checks.py jobs/<this>/report.md --report jobs/<this>/eval.md`. It validates both formats: coverage, valid severities, that every citation resolves against `reference/`, open decisions present, and honest counts. If any gate fails, fix the report and rerun. **Never hand over a report that fails its own auditor.** (This is the step a cold run skipped; it is the one that makes the result trustworthy.)
+5. **Render the page.** Run `python render/render.py jobs/<this>/report.md -o jobs/<this>/report.html` (add `--demo` for a synthetic or example report). This turns the report into the forwardable one-pager automatically; do not hand-build the HTML.
+
+The finished job folder holds `input/`, `report.md`, `report.html` and `eval.md`: a self-contained, reproducible record. Job folders are confidential and git-ignored; do not commit real ones.
 
 ## How to cite
 

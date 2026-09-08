@@ -3,6 +3,9 @@ __pycache__/
 .DS_Store
 scratch/
 
-# per-run products (keep the folder + README)
-output/*
-!output/README.md
+# Per-job folders hold confidential submitted documents and their reports.
+# Keep the folder, its README and the copy-me template; ignore real jobs.
+jobs/*
+!jobs/README.md
+!jobs/_template/
+!jobs/_template/**

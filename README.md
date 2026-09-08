@@ -65,10 +65,10 @@ perspectives.md  the two-sided (platform) rendering: same findings, both parties
 reference/       the standard, verbatim: DSGVO, DSK guidance, DSG NRW, SOURCES
 audit/           the eval: proof the auditor catches what it should (see below)
 render/          template + script that renders a report into an HTML one-pager
-output/          where produced reports and pages are saved (see rules.md run flow)
+jobs/            one folder per audit: input documents + report + html + eval receipt
 ```
 
-When you operate this folder on real documents, follow the **run flow** in `rules.md`: read the documents, produce the report, **run `python audit/checks.py` on your own output** (it validates both the single-column and the two-sided platform format), render the HTML with `render/render.py`, and save both to `output/`. The audit step is not optional; a report that fails its own auditor is not handed over.
+When you operate this folder on real documents, follow the **run flow** in `rules.md`: open a job folder (`jobs/<anbieter>-<date>/`, copied from `jobs/_template/`) and put the submitted documents in its `input/`; produce the report; **run `python audit/checks.py` on your own output** (it validates both the single-column and the two-sided platform format); render the HTML with `render/render.py`; the finished job folder holds input, report, html and the eval receipt together. The audit step is not optional; a report that fails its own auditor is not handed over. Job folders are confidential and git-ignored.
 
 ## Two sides of the same audit (platform mode)
 
