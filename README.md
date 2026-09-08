@@ -45,7 +45,7 @@ An auditor you cannot check is just an opinion generator. `audit/checks.py` read
 
 ## Two sides of the same audit (platform mode)
 
-The common case is not a city auditing a stranger; it is a **Community and a startup already trying to work together**, both needing the same contract to reach signature. The audit can be rendered from both sides at once: one set of findings and citations, one severity per check, but two next-action columns, what the **Community** must clarify and what the **service provider** must document. A NARROW FLAG becomes a concrete task for one party, and the audit turns into a shared punch-list to signature instead of a verdict handed down. This is a rendering, not a re-audit: the underlying single-column report still passes `audit/`. See `perspectives.md` and `demo/platform-report.md`; `render/render.py` turns any report into a forwardable HTML one-pager.
+The common case is not a city auditing a stranger; it is a **municipality and a startup already trying to work together**, both needing the same contract to reach signature. The audit can be rendered from both sides at once: one set of findings and citations, one severity per check, but two next-action columns, what the **municipality** must clarify and what the **service provider** must document. A NARROW FLAG becomes a concrete task for one party, and the audit turns into a shared punch-list to signature instead of a verdict handed down. This is a rendering, not a re-audit: the underlying single-column report still passes `audit/`. See `perspectives.md` and `demo/platform-report.md`; `render/render.py` turns any report into a forwardable HTML one-pager.
 
 ## Scaling to other states (Bundesländer)
 

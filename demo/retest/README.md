@@ -1,6 +1,6 @@
 # demo/retest — the corrected dossier, re-audited in platform format
 
-The same test → correct → re-test loop as [`../stepintomore-loop/`](../stepintomore-loop/README.md), but this run produces the **two-sided platform report** (the `Deal-Vorprüfung` with a *Community* column and a *service provider* column, per [`../../perspectives.md`](../../perspectives.md)) instead of the single-column report.
+The same test → correct → re-test loop as [`../stepintomore-loop/`](../stepintomore-loop/README.md), but this run produces the **two-sided platform report** (the `Deal-Vorprüfung` with a *municipality* column and a *service provider* column, per [`../../perspectives.md`](../../perspectives.md)) instead of the single-column report.
 
 The point of keeping it separate: it proves `audit/checks.py` validates **both** report formats. The checker parses the platform table (one severity per row, both action columns filled, every citation resolving against `reference/`) exactly as it parses the single-column format. A cold run that produced the platform format used to be unparseable; this folder is the frozen evidence that it now passes.
 
