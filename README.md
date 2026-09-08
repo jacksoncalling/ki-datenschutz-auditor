@@ -61,9 +61,16 @@ identity.md      who the auditor is, the three finding classes, the discretion g
 rules.md         the procedure, citation format, severity logic, output format
 checklist.md     the five ordered Prüfschritte, each anchored to a provision
 examples.md      three worked audits (a PASS, a NARROW FLAG, a CLEAR FAIL)
+perspectives.md  the two-sided (platform) rendering: same findings, both parties' next actions
 reference/       the standard, verbatim: DSGVO, DSK guidance, DSG NRW, SOURCES
 audit/           the eval: proof the auditor catches what it should (see below)
 ```
+
+## Two sides of the same audit (platform mode)
+
+The common case is not a city auditing a stranger; it is a **Kommune and a startup already trying to work together**, both needing the same contract to reach signature (several Agentic-AI-Hub pilot applicants were exactly such pairs). So the audit can be rendered from both sides at once: one dossier, one set of findings and citations, one severity per check, but two next-action columns, what the **Kommune** must require or clarify, and what the **Anbieter** must document or contractually secure. A NARROW FLAG becomes a concrete task for exactly one party; the audit turns into a shared punch-list to signature instead of a verdict handed down.
+
+This is a rendering, not a re-audit: `reference/`, `checklist.md`, the classes and the citations stay single-homed, and the machine-checkable single-column report underneath still passes `audit/`. See `perspectives.md` for the format and `demo/platform-report.md` for a worked both-sides example.
 
 ## Scaling to other Bundesländer
 

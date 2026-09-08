@@ -11,8 +11,9 @@ Complete and committed locally. NOT yet pushed to GitHub (submission needs a pub
 - Auditor files done: `identity.md`, `rules.md`, `checklist.md` (5 Prüfschritte), `examples.md`, `README.md`.
 - `reference/` holds the verbatim standard (DSGVO Art. 5/13/22/28/35/44, DSK Orientierungshilfe KI v1.0 cited sections, DSG NRW state module, SOURCES.md). All byte-clean UTF-8.
 - `audit/` eval: `checks.py` (deterministic, resolves 91 valid IDs from reference/), `compliance-judge.md` (binary layer 2), 3 synthetic fixtures + planted-defect, keys outside the drop-in, receipts. `python audit/checks.py --all` runs the whole suite (real reports PASS, planted defect FAILs).
-- `demo/`: frozen `TEST_METHOD.md` + a mixed dossier for a recorded cold-agent run (in progress at last edit).
-- Open thread: a corporate/SME reframe (same engine, reader becomes a company DSB evaluating an AI SaaS vendor). Josh's real business interest, likely stronger than the government market.
+- `demo/`: frozen `TEST_METHOD.md`, a mixed dossier, the recorded cold-agent run (`cold-run/`), and the two-sided `platform-report.md`.
+- Platform mode built: `perspectives.md` renders the same findings from both sides (Kommune next action + Anbieter next action), for the real customer = a startup+municipality pair getting a deal to signature. It is a rendering; the machine-checkable single-column report still backs it.
+- Open thread: which side to lead the go-to-market (startup readiness vs the pair), and adding state modules via regional-expert conversations (each convo = a relationship + a module + a possible pilot).
 
 ## Stack
 
