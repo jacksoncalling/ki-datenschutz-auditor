@@ -2,3 +2,7 @@ __pycache__/
 *.pyc
 .DS_Store
 scratch/
+
+# per-run products (keep the folder + README)
+output/*
+!output/README.md

@@ -14,5 +14,10 @@
     "CLEAR PASS": "CLEAR PASS",
     "NARROW FLAG": "NARROW FLAG",
     "CLEAR FAIL": "CLEAR FAIL"
+  },
+  "platform_count_labels": {
+    "CLEAR PASS": "Erfüllt",
+    "NARROW FLAG": "Klärungen offen",
+    "CLEAR FAIL": "K.-o.-Kriterien"
   }
 }

@@ -64,7 +64,11 @@ examples.md      three worked audits (a PASS, a NARROW FLAG, a CLEAR FAIL)
 perspectives.md  the two-sided (platform) rendering: same findings, both parties' next actions
 reference/       the standard, verbatim: DSGVO, DSK guidance, DSG NRW, SOURCES
 audit/           the eval: proof the auditor catches what it should (see below)
+render/          template + script that renders a report into an HTML one-pager
+output/          where produced reports and pages are saved (see rules.md run flow)
 ```
+
+When you operate this folder on real documents, follow the **run flow** in `rules.md`: read the documents, produce the report, **run `python audit/checks.py` on your own output** (it validates both the single-column and the two-sided platform format), render the HTML with `render/render.py`, and save both to `output/`. The audit step is not optional; a report that fails its own auditor is not handed over.
 
 ## Two sides of the same audit (platform mode)
 

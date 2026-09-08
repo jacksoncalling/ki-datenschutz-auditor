@@ -120,14 +120,21 @@ def parse_report(path, conv):
     labels = conv.get("count_line_labels", {s: s for s in severities})
     marker = conv.get("open_decision_marker", "Offene Entscheidung")
 
-    # header counts: built from the configured severities and their labels, in order
+    # header counts: built from the configured severities and their labels, in order.
+    # Try the single-column labels first, then the platform "Deal-Reifegrad" labels.
     counts = {}
     count_re = r'.*?'.join(re.escape(labels[s]) + r':\s*(\d+)' for s in severities)
     mc = re.search(count_re, text, re.S)
+    if not mc and conv.get("platform_count_labels"):
+        plabels = conv["platform_count_labels"]
+        pcount_re = r'.*?'.join(re.escape(plabels[s]) + r'[^:\n]*:\s*(\d+)' for s in severities)
+        mc = re.search(pcount_re, text, re.S)
     if mc:
         counts = {s: int(n) for s, n in zip(severities, mc.groups())}
 
-    # findings: ### [PS-n] <title> — <CLASS>
+    # findings, two supported formats:
+    #  - single-column canonical: "### [PS-n] <title> — <CLASS>" + "Offene Entscheidung:" line
+    #  - two-sided platform table: "| [PS-n] title | CLASS | STANDARD | Kommune… | Anbieter… |"
     findings = []
     dec_re = re.compile(r'(?m)^\s*[-*]?\s*' + re.escape(marker) + r'[^\n]*:')
     parts = re.split(r'(?m)^### ', text)
@@ -145,6 +152,23 @@ def parse_report(path, conv):
         has_decision = dec_re.search(block) is not None
         findings.append({"ps": ps, "class": cls, "cites": cites,
                          "has_decision": has_decision})
+
+    if not findings:  # fall back to the platform (two-sided) table format
+        for line in text.splitlines():
+            if not re.match(r'\s*\|\s*\[PS-', line):
+                continue
+            cols = [c.strip() for c in line.strip().strip("|").split("|")]
+            if not re.match(r'\[PS-\d+\]', cols[0]):
+                continue
+            ps = re.match(r'\[(PS-\d+)\]', cols[0]).group(1)
+            klass = cols[1] if len(cols) > 1 else ""
+            cls = next((s for s in severities if s == klass or s in klass), None)
+            cites = [normalize_id(c) for c in CITE_RE.findall(line)]
+            # the two action columns ARE the open decision; both must be filled
+            actions = [c for c in cols[3:] if c]
+            has_decision = len(actions) >= 2
+            findings.append({"ps": ps, "class": cls, "cites": cites,
+                             "has_decision": has_decision})
     return counts, findings
 
 def parts_next_marker(p):
