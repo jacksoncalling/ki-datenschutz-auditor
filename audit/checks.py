@@ -28,6 +28,10 @@ def load_conventions(path):
     with open(path, encoding="utf-8") as f:
         return json.load(f)
 
+def read_text(path):
+    with open(path, encoding="utf-8") as f:
+        return f.read()
+
 # ---------- build the set of VALID citation IDs from reference/ ----------
 
 def valid_ids_from_reference(conv, base):
@@ -39,7 +43,7 @@ def valid_ids_from_reference(conv, base):
     dsgvo = os.path.join(ref_dir, conv["reference_files"]["dsgvo"])
     if os.path.exists(dsgvo):
         cur = para = None
-        for line in open(dsgvo, encoding="utf-8"):
+        for line in read_text(dsgvo).splitlines():
             m = re.match(r'## Art\. (\d+) DSGVO', line)
             if m:
                 cur = m.group(1); para = None
@@ -56,7 +60,7 @@ def valid_ids_from_reference(conv, base):
     # DSK: ## [DSK-OH-X.Y] (literal id)
     dsk = os.path.join(ref_dir, conv["reference_files"]["dsk"])
     if os.path.exists(dsk):
-        for line in open(dsk, encoding="utf-8"):
+        for line in read_text(dsk).splitlines():
             for m in re.findall(r'\[(DSK-OH-[0-9.]+)\]', line):
                 ids.add(m)
 
@@ -64,7 +68,7 @@ def valid_ids_from_reference(conv, base):
     state = os.path.join(ref_dir, conv["reference_files"]["state"])
     if os.path.exists(state):
         cur = None
-        for line in open(state, encoding="utf-8"):
+        for line in read_text(state).splitlines():
             m = re.match(r'## § (\d+) DSG NRW', line)
             if m:
                 cur = m.group(1); ids.add(f"DSG-NRW-§{cur}"); continue
@@ -92,7 +96,7 @@ def reference_integrity(conv, base):
         path = os.path.join(ref_dir, fname)
         if not os.path.exists(path):
             continue
-        lines = open(path, encoding="utf-8").read().split("\n")
+        lines = read_text(path).split("\n")
         idxs = [i for i, l in enumerate(lines) if l.startswith("## ")]
         for k, start in enumerate(idxs):
             end = idxs[k + 1] if k + 1 < len(idxs) else len(lines)
@@ -110,17 +114,22 @@ def reference_integrity(conv, base):
                 empty.append(f"{fname}: {lines[start].strip()}")
     return empty
 
-def parse_report(path):
-    text = open(path, encoding="utf-8").read()
-    # header counts
+def parse_report(path, conv):
+    text = read_text(path)
+    severities = conv["severities"]
+    labels = conv.get("count_line_labels", {s: s for s in severities})
+    marker = conv.get("open_decision_marker", "Offene Entscheidung")
+
+    # header counts: built from the configured severities and their labels, in order
     counts = {}
-    mc = re.search(r'CLEAR PASS:\s*(\d+).*?NARROW FLAG:\s*(\d+).*?CLEAR FAIL:\s*(\d+)', text, re.S)
+    count_re = r'.*?'.join(re.escape(labels[s]) + r':\s*(\d+)' for s in severities)
+    mc = re.search(count_re, text, re.S)
     if mc:
-        counts = {"CLEAR PASS": int(mc.group(1)),
-                  "NARROW FLAG": int(mc.group(2)),
-                  "CLEAR FAIL": int(mc.group(3))}
+        counts = {s: int(n) for s, n in zip(severities, mc.groups())}
+
     # findings: ### [PS-n] <title> — <CLASS>
     findings = []
+    dec_re = re.compile(r'(?m)^\s*[-*]?\s*' + re.escape(marker) + r'[^\n]*:')
     parts = re.split(r'(?m)^### ', text)
     for p in parts[1:]:
         head = p.splitlines()[0]
@@ -128,16 +137,12 @@ def parse_report(path):
         if not mh:
             continue
         ps = mh.group(1)
-        # class = last severity token appearing in the heading line
-        cls = None
-        for sev in ["CLEAR PASS", "NARROW FLAG", "CLEAR FAIL"]:
-            if sev in head:
-                cls = sev
-        body_end = parts_next_marker(p)
-        block = p[:body_end]
+        # class = the configured severity token present in the heading line
+        cls = next((sev for sev in severities if sev in head), None)
+        block = p[:parts_next_marker(p)]
         cites = [normalize_id(c) for c in CITE_RE.findall(block)]
         # require the structured field line, not the bare phrase in prose
-        has_decision = re.search(r'(?m)^\s*[-*]?\s*Offene Entscheidung[^\n]*:', block) is not None
+        has_decision = dec_re.search(block) is not None
         findings.append({"ps": ps, "class": cls, "cites": cites,
                          "has_decision": has_decision})
     return counts, findings
@@ -150,7 +155,7 @@ def parts_next_marker(p):
 # ---------- key ----------
 
 def parse_key(path):
-    text = open(path, encoding="utf-8").read()
+    text = read_text(path)
     expected = {}
     for m in re.finditer(r'\|\s*(PS-\d+)\s*\|\s*(CLEAR PASS|NARROW FLAG|CLEAR FAIL)\s*\|', text):
         expected[m.group(1)] = m.group(2)
@@ -160,15 +165,21 @@ def parse_key(path):
 
 def evaluate(report_path, key_path, conv, valid):
     """Run all gates on one report. Returns (ok, gates, findings)."""
-    counts, findings = parse_report(report_path)
+    counts, findings = parse_report(report_path, conv)
 
     gates = []  # (name, ok, detail)
 
-    # G1 coverage
-    present = {f["ps"] for f in findings}
+    # G1 coverage: every required Prüfschritt present, and none duplicated
+    present = [f["ps"] for f in findings]
     missing = [c for c in conv["required_checks"] if c not in present]
-    gates.append(("coverage", not missing,
-                  "alle Prüfschritte vorhanden" if not missing else f"fehlend: {missing}"))
+    dupes = sorted({ps for ps in present if present.count(ps) > 1})
+    cov_ok = not missing and not dupes
+    detail = "alle Prüfschritte vorhanden"
+    if missing:
+        detail = f"fehlend: {missing}"
+    elif dupes:
+        detail = f"doppelt: {dupes}"
+    gates.append(("coverage", cov_ok, detail))
 
     # G2 valid severity
     bad_sev = [f["ps"] for f in findings if f["class"] not in conv["severities"]]

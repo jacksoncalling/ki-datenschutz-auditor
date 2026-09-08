@@ -34,14 +34,21 @@ def parse(md):
         d["TITLE"], d["PRODUKT"], d["ANBIETER"], d["KOMMUNE"], d["REGION"] = \
             (m.group(1).strip(), m.group(2), m.group(3), m.group(4), m.group(5))
     else:
-        d.update(TITLE="Deal-Vorprüfung", PRODUKT="", ANBIETER="", KOMMUNE="", REGION="")
+        # graceful fallback: always show the title, warn that the header is partial
+        d.update(PRODUKT="", ANBIETER="", KOMMUNE="", REGION="")
+        m2 = re.search(r'(?m)^#\s*([^:\n]+):\s*(.+)$', md)
+        m1 = re.search(r'(?m)^#\s*(.+)$', md)
+        if m2:
+            d["TITLE"], d["PRODUKT"] = m2.group(1).strip(), m2.group(2).strip()
+        else:
+            d["TITLE"] = m1.group(1).strip() if m1 else "Deal-Vorprüfung"
+        sys.stderr.write("render.py: warning: title not in 'Produkt (Anbieter) "
+                         "↔ Kommune (Region)' form; header filled partially.\n")
 
     m = re.search(r'(?m)^Geprüft gegen:\s*(.+)$', md)
     d["STANDARD"] = "Geprüft gegen " + m.group(1).strip() if m else ""
     m = re.search(r'(?m)^Datum:\s*(.+?)\s*·\s*Zuständige Aufsicht:\s*(.+)$', md)
     d["DATUM"], d["AUFSICHT"] = (m.group(1).strip(), m.group(2).strip()) if m else ("", "")
-
-    d["DEMO_TAG"] = "Musterbericht · fiktives Beispiel" if re.search(r'fikt|Muster|Demo', md) else ""
 
     m = re.search(r'(?m)^Kurz:\s*(.+)$', md)
     verdict = m.group(1).strip() if m else ""
@@ -58,6 +65,8 @@ def parse(md):
             continue
         cols = [c.strip() for c in line.strip().strip("|").split("|")]
         if len(cols) < 5:
+            sys.stderr.write("render.py: warning: skipping PS row with %d columns "
+                             "(expected 5): %s\n" % (len(cols), line.strip()[:70]))
             continue
         ps_m = re.match(r'\[(PS-\d+)\]\s*(.+)', cols[0])
         ps, title = (ps_m.group(1), ps_m.group(2)) if ps_m else ("PS-?", cols[0])
@@ -110,7 +119,8 @@ def build(d):
         "FINDINGS": "\n".join(rows),
     }
     tpl_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "template.html")
-    out = open(tpl_path, encoding="utf-8").read()
+    with open(tpl_path, encoding="utf-8") as f:
+        out = f.read()
     for k, v in repl.items():
         out = out.replace("{{%s}}" % k, v)
     if not d["DEMO_TAG"]:
@@ -122,9 +132,14 @@ def main():
     base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     ap.add_argument("report", nargs="?", default=os.path.join(base, "demo", "platform-report.md"))
     ap.add_argument("-o", "--out")
+    ap.add_argument("--demo", action="store_true",
+                    help="stamp the page 'Musterbericht · fiktives Beispiel' (use for synthetic reports)")
     args = ap.parse_args()
-    md = open(args.report, encoding="utf-8").read()
-    out = build(parse(md))
+    with open(args.report, encoding="utf-8") as f:
+        md = f.read()
+    data = parse(md)
+    data["DEMO_TAG"] = "Musterbericht · fiktives Beispiel" if args.demo else ""
+    out = build(data)
     dest = args.out or os.path.splitext(args.report)[0] + ".html"
     with open(dest, "w", encoding="utf-8") as fh:
         fh.write(out)
