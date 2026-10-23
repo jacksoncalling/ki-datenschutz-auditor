@@ -1,0 +1,166 @@
+{
+  "type": "object",
+  "properties": {
+    "produkt": {
+      "type": "string"
+    },
+    "anbieter": {
+      "type": "string"
+    },
+    "datum": {
+      "type": "string",
+      "format": "date"
+    },
+    "einsatzkontext_zusammenfassung": {
+      "type": "string"
+    },
+    "vorgelegte_unterlagen": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "fehlende_unterlagen": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "geprueft_gegen": {
+      "type": "string",
+      "description": "Wird vom Dienst überschrieben."
+    },
+    "zustaendige_aufsicht": {
+      "type": "string"
+    },
+    "schwelle": {
+      "type": "object",
+      "properties": {
+        "personenbezogene_daten": {
+          "type": "boolean"
+        },
+        "ki_anwendung": {
+          "type": "boolean"
+        },
+        "begruendung": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "personenbezogene_daten",
+        "ki_anwendung",
+        "begruendung"
+      ],
+      "additionalProperties": false
+    },
+    "befunde": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "pruefschritt": {
+            "type": "string",
+            "enum": [
+              "PS-0",
+              "PS-1",
+              "PS-2",
+              "PS-3",
+              "PS-4"
+            ]
+          },
+          "titel": {
+            "type": "string"
+          },
+          "klasse": {
+            "type": "string",
+            "enum": [
+              "CLEAR PASS",
+              "NARROW FLAG",
+              "CLEAR FAIL"
+            ]
+          },
+          "fundstelle_dossier": {
+            "type": "string",
+            "description": "Wörtliches Zitat aus den Unterlagen oder „keine Angabe“."
+          },
+          "quelle_dokument": {
+            "type": "string",
+            "description": "Aus welchem Dokument/Abschnitt das Zitat stammt."
+          },
+          "standard": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Zitat-ID ohne Klammern, z. B. DSGVO-Art28-3 oder BDSG-§26-1."
+                },
+                "zitat": {
+                  "type": "string",
+                  "description": "Wörtliches Kurzzitat aus reference/."
+                }
+              },
+              "required": [
+                "id",
+                "zitat"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "bewertung": {
+            "type": "string"
+          },
+          "offene_entscheidung": {
+            "type": "string",
+            "description": "Pflicht bei NARROW FLAG und CLEAR FAIL, leer bei CLEAR PASS."
+          },
+          "nutzer_naechste_handlung": {
+            "type": "string"
+          },
+          "anbieter_naechster_nachweis": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "pruefschritt",
+          "titel",
+          "klasse",
+          "fundstelle_dossier",
+          "quelle_dokument",
+          "standard",
+          "bewertung",
+          "offene_entscheidung",
+          "nutzer_naechste_handlung",
+          "anbieter_naechster_nachweis"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "ergaenzendes_recht_hinweis": {
+      "type": "string"
+    },
+    "wichtigste_offene_entscheidung": {
+      "type": "string"
+    },
+    "kurzfazit": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "produkt",
+    "anbieter",
+    "datum",
+    "einsatzkontext_zusammenfassung",
+    "vorgelegte_unterlagen",
+    "fehlende_unterlagen",
+    "geprueft_gegen",
+    "zustaendige_aufsicht",
+    "schwelle",
+    "befunde",
+    "ergaenzendes_recht_hinweis",
+    "wichtigste_offene_entscheidung",
+    "kurzfazit"
+  ],
+  "additionalProperties": false
+}

@@ -5,6 +5,7 @@
 **Status (2026-10-23):** the website isn't built yet. The folder is ready for companies: the Einsatzkontext rule and the BDSG module are in (BDSG verified against the official text). Files next to this one:
 - `USER_STORIES.md`: what users can do, with acceptance criteria (including **PDF download**, US-6)
 - `LOVABLE_PROMPTS.md`: copy-paste prompts to build it in Lovable
+- `LOVABLE_DIRECTIONS.md`: the step-by-step guide around those prompts (accounts, secrets, tests, updates)
 
 Audience: companies first, Kommunen as an option. Model: Sonnet 5.5 by default, Haiku 5.5 tested as the cheap option.
 
@@ -166,8 +167,8 @@ The gates catch form errors (fake citations, missing decisions) whatever the mod
 2. ✅ **Organisation type** in `rules.md`/`checklist.md`: public body → state module + PS-1 admin-law paragraph; company → BDSG module, admin-law paragraph skipped, company wording.
 3. ✅ **`reference/bdsg.md`**: verbatim BDSG excerpts + `SOURCES.md` entry; `checks.py`/`conventions.json` accept `[BDSG-§n-k]` citation IDs (116 valid IDs). ✅ Verified against the official text.
 4. ✅ **One company fixture** with an answer key: `04-company-mixed` (applicant pre-sorting); cold run matched the key 5/5.
-5. **`web/export_bundle.py`** → `web/bundle/`: `system-prompt.md`, `valid-ids.json` (116 IDs with the BDSG module), `report.schema.json`, `VERSION`.
-6. **Parity test:** bundle JSON → generated Markdown → `python audit/checks.py` passes.
+5. ✅ **`web/export_bundle.py`** → `web/bundle/`: `system-prompt.md`, `report.schema.json`, `valid-ids.json` (116 IDs), `gates.json`, `examples/` (JSON + expected Markdown), `VERSION`. The site loads it from a pinned tag (`bundle-v1`), so nothing is copied into Lovable.
+6. ✅ **Parity test** `web/test_parity.py`: example JSON → web gates → generated Markdown → `audit/checks.py` agree, and 8 planted defects are rejected by both. Reference code for the engine: `web/reference_impl.py`. It caught one checker gap on its first run (an empty "Offene Entscheidung" line passed `checks.py`), now fixed.
 
 ### b) Accounts and keys
 - Anthropic API key → Lovable Cloud Secrets as `ANTHROPIC_API_KEY`; model in `AUDIT_MODEL`. Set a monthly spend limit in the Anthropic console.
@@ -189,7 +190,7 @@ The report's natural next step for a company is "and now how do we use this tool
 
 | Step | What | Who | Done when |
 |---|---|---|---|
-| 0 | Repo changes 8a.1–8a.6 (1–4 done) | Claude | bundle exists; parity test passes `checks.py` |
+| 0 | Repo changes 8a.1–8a.6 ✅ | Claude | done; tag `bundle-v1` after merge |
 | 1 | Landing page + use-case intake + upload flow, mock data (prompt 1) | you in Lovable | clickable prototype to screen-record |
 | 2 | Auth, database, storage, RLS (prompt 2) | Lovable | two accounts can't see each other's audits |
 | 3 | `run-audit` with Claude (prompt 3) | Lovable + bundle | `01-clean-pass` → 5× CLEAR PASS |

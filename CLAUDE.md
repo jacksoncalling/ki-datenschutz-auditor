@@ -23,7 +23,8 @@ Complete and committed locally. NOT yet pushed to GitHub (submission needs a pub
 - **BDSG module** `reference/bdsg.md` for companies (§ 1(1), § 2(4), § 22, § 26, § 37, § 38, § 40(1-2)), wired into `checklist.md` ("Ergänzende Ebene"), `checks.py` (`[BDSG-§n-k]` IDs; 116 valid IDs now) and `conventions.json`. Extracted from the `bundestag/gesetze` mirror, then **verified word for word** against the official gesetze-im-internet.de XML (Stand 12.5.2026, via the QuantLaw daily archive): 18/18 Absätze identical. Re-check with `python audit/verify_bdsg.py`.
 - **Web service plan** in `web/`: `PLAN.md` (architecture: Lovable front end + Supabase + one Claude call with the folder as system prompt + checks.py gates ported), `USER_STORIES.md` (incl. PDF download), `LOVABLE_PROMPTS.md`. Model: Sonnet 5.5 default, Haiku 5.5 to be tested against the fixtures.
 - **Company fixture** `audit/fixtures/04-company-mixed` (+ `einsatzkontext.md`), key frozen before a cold-agent run; the cold run matched 5/5 (2 PASS, 2 FLAG, 1 FAIL). Its walk-log led to three fixes: render.py refuses single-column reports, `## Ergänzendes Recht` is part of the format and all report citations are gated, § 38 DSB note placement for PASS. See `audit/FINDINGS.md`.
-- Next: `web/export_bundle.py` (system prompt + valid-ids.json + schema), parity test.
+- **Web bundle** `web/bundle/` built by `web/export_bundle.py` (system prompt, schema, valid IDs, gates, examples, VERSION); the site loads it from a pinned tag. `web/reference_impl.py` = reference for the engine's gates + Markdown; `web/test_parity.py` proves they agree with `checks.py` (and found that empty "Offene Entscheidung" lines passed, now fixed). Step-by-step guide: `web/LOVABLE_DIRECTIONS.md`.
+- Next: merge PR #1, tag `bundle-v1`, build in Lovable.
 
 ## Stack
 
@@ -42,7 +43,8 @@ Findings are three classes only: CLEAR PASS / NARROW FLAG / CLEAR FAIL. Citation
 - Entry/route: `README.md`
 - The auditor: `identity.md`, `rules.md`, `checklist.md`, `examples.md`
 - The standard: `reference/*.md` (+ `reference/SOURCES.md` for provenance); `dsg-nrw.md` for public bodies, `bdsg.md` for companies
-- Web service plan: `web/PLAN.md`, `web/USER_STORIES.md`, `web/LOVABLE_PROMPTS.md`
+- Web service plan: `web/PLAN.md`, `web/USER_STORIES.md`, `web/LOVABLE_PROMPTS.md`, `web/LOVABLE_DIRECTIONS.md`
+- Web bundle: `web/export_bundle.py` → `web/bundle/`; `web/reference_impl.py`; `web/test_parity.py`. After changing auditor or reference files: rebuild the bundle and run the parity test.
 - The eval: `audit/checks.py`, `audit/compliance-judge.md`, `audit/conventions.json`; `audit/verify_bdsg.py` (BDSG module vs official text)
 - Fixtures/keys/receipts: `audit/fixtures/`, `audit/keys/`, `audit/reports/`
 - Demo: `demo/TEST_METHOD.md`, `demo/dossier.md`, `demo/cold-run/`

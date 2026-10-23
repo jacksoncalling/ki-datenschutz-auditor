@@ -151,7 +151,9 @@ def parse_report(path, conv):
     #  - single-column canonical: "### [PS-n] <title> — <CLASS>" + "Offene Entscheidung:" line
     #  - two-sided platform table: "| [PS-n] title | CLASS | STANDARD | Kommune… | Anbieter… |"
     findings = []
-    dec_re = re.compile(r'(?m)^\s*[-*]?\s*' + re.escape(marker) + r'[^\n]*:')
+    # the open-decision line must carry text after its label; an empty
+    # "Offene Entscheidung (DSB):" is no decision (found by web/test_parity.py)
+    dec_re = re.compile(r'(?m)^\s*[-*]?\s*' + re.escape(marker) + r'[^\n:]*:[ \t]*\S')
     parts = re.split(r'(?m)^### ', text)
     for p in parts[1:]:
         head = p.splitlines()[0]

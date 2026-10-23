@@ -23,7 +23,8 @@ WHO = {
     "fail": ("{k} · nicht freigeben", "{a} · muss geändert werden"),
 }
 # how the demand side is named in running text ("Für die Kommune ...")
-NUTZER_PHRASE = {"Kommune": "die Kommune", "Unternehmen": "das Unternehmen"}
+NUTZER_PHRASE = {"Kommune": "die Kommune", "Unternehmen": "das Unternehmen",
+                 "Öffentliche Stelle": "die öffentliche Stelle"}
 
 def parties(md):
     """Party names from the findings table header, e.g. "Unternehmen: nächste

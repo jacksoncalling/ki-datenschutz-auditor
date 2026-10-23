@@ -70,7 +70,7 @@ reference/       the standard, verbatim: DSGVO, DSK guidance, DSG NRW, BDSG, SOU
 audit/           the eval: proof the auditor catches what it should
 render/          template + script that renders a report into an HTML one-pager
 jobs/            one folder per audit: inputs + report + html + eval receipt (git-ignored)
-web/             plan, user stories and Lovable prompts for the web service version
+web/             web service: plan, user stories, Lovable prompts + directions, the bundle the site loads
 ```
 
 On real documents, follow the **run flow** in `rules.md`: open a `jobs/` folder, save the inputs, produce the report, run `checks.py` on your own output, then render. The audit step is not optional; a report that fails its own auditor is not handed over.
