@@ -165,7 +165,7 @@ The gates catch form errors (fake citations, missing decisions) whatever the mod
 1. ✅ **Use-case rule** in `rules.md` + an `Einsatzkontext` line in the report header (section 3).
 2. ✅ **Organisation type** in `rules.md`/`checklist.md`: public body → state module + PS-1 admin-law paragraph; company → BDSG module, admin-law paragraph skipped, company wording.
 3. ✅ **`reference/bdsg.md`**: verbatim BDSG excerpts + `SOURCES.md` entry; `checks.py`/`conventions.json` accept `[BDSG-§n-k]` citation IDs (116 valid IDs). ✅ Verified against the official text.
-4. **One company fixture** with an answer key (e.g. a SaaS AI writing assistant for a mid-size company) to sit next to the three municipal ones.
+4. ✅ **One company fixture** with an answer key: `04-company-mixed` (applicant pre-sorting); cold run matched the key 5/5.
 5. **`web/export_bundle.py`** → `web/bundle/`: `system-prompt.md`, `valid-ids.json` (116 IDs with the BDSG module), `report.schema.json`, `VERSION`.
 6. **Parity test:** bundle JSON → generated Markdown → `python audit/checks.py` passes.
 
@@ -189,7 +189,7 @@ The report's natural next step for a company is "and now how do we use this tool
 
 | Step | What | Who | Done when |
 |---|---|---|---|
-| 0 | Repo changes 8a.1–8a.6 (1–3 done) | Claude | bundle exists; company fixture + parity test pass `checks.py` |
+| 0 | Repo changes 8a.1–8a.6 (1–4 done) | Claude | bundle exists; parity test passes `checks.py` |
 | 1 | Landing page + use-case intake + upload flow, mock data (prompt 1) | you in Lovable | clickable prototype to screen-record |
 | 2 | Auth, database, storage, RLS (prompt 2) | Lovable | two accounts can't see each other's audits |
 | 3 | `run-audit` with Claude (prompt 3) | Lovable + bundle | `01-clean-pass` → 5× CLEAR PASS |

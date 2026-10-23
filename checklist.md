@@ -17,7 +17,7 @@ The five checks are deliberately the ones that (a) are mandatory for lawfulness,
 - **NARROW FLAG:** personal data is processed, DSFA is likely required, but the dossier is silent on whether one was done. (Very common.)
 - **CLEAR PASS:** a DSFA per Art. 35 is documented or explicitly committed, and the vendor supplies the system information the organisation needs to run it (`[DSK-OH-2.3]`).
 
-*(Unternehmen)* Where a DSFA is required, the company must also have a Datenschutzbeauftragte(n), whatever its size (`[BDSG-§38-1]`: "unabhängig von der Anzahl der mit der Verarbeitung beschäftigten Personen"). Name this in the Offene Entscheidung. Where special categories are processed, `[BDSG-§22-2]` lists the protective measures expected; where they are employee data, `[BDSG-§26-3]`.
+*(Unternehmen)* Where a DSFA is required, the company must also have a Datenschutzbeauftragte(n), whatever its size (`[BDSG-§38-1]`: "unabhängig von der Anzahl der mit der Verarbeitung beschäftigten Personen"). If PS-0 is a FLAG or FAIL, name this in its Offene Entscheidung; if PS-0 is a PASS (which has no open-decision line), state it in the Bewertung and again under "Ergänzendes Recht". Where special categories are processed, `[BDSG-§22-2]` lists the protective measures expected; where they are employee data, `[BDSG-§26-3]`.
 
 If the tool clearly processes no personal data, record that and stop the whole audit here.
 
@@ -71,7 +71,7 @@ Use the Einsatzkontext: if the user states the tool makes or prepares no decisio
 
 ## Ergänzende Ebene (state layer or BDSG)
 
-After [PS-0] through [PS-4], apply the extra module that fits the organisation type. Record it as a short confirmation, not a sixth check, unless it changes an outcome.
+After [PS-0] through [PS-4], apply the extra module that fits the organisation type. Record it in the report's `## Ergänzendes Recht` section (`rules.md`, output format) as a short confirmation, not a sixth check, unless it changes an outcome. Citations there are checked by `audit/checks.py` like those in the findings.
 
 **Never mix the modules.** A company report cites no `[DSG-NRW-…]`, a public-body report cites no `[BDSG-…]`. `audit/checks.py` enforces this from the "Geprüft gegen" line.
 

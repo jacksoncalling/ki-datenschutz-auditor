@@ -9,7 +9,8 @@ would ask before trusting the report:
   1. Does it cover every required Prüfschritt?
   2. Is every finding classified with a valid severity?
   3. Does every finding cite at least one provision?
-  4. Does every cited provision actually EXIST in reference/ (no phantom cites)?
+  4. Does every cited provision actually EXIST in reference/ (no phantom cites),
+     anywhere in the report, not only inside the findings?
   5. Does every NARROW FLAG / CLEAR FAIL carry an "Offene Entscheidung" line?
   6. Do the header counts match the findings actually present (gate honesty)?
   7. If the header names one extra module (BDSG or DSG NRW), are all module
@@ -229,8 +230,12 @@ def evaluate(report_path, key_path, conv, valid):
     gates.append(("has-citation", not no_cite,
                   "jeder Befund zitiert" if not no_cite else f"ohne Zitat: {no_cite}"))
 
-    # G4 no phantom citations
-    phantom = sorted({c for f in findings for c in f["cites"] if c not in valid})
+    # G4 no phantom citations, anywhere in the report: inside the findings and
+    # in the other sections too (e.g. "Ergänzendes Recht"), which a finding
+    # block does not reach. (Found by the company cold run.)
+    report_cites = {normalize_id(c) for c in CITE_RE.findall(read_text(report_path))}
+    all_cites = report_cites | {c for f in findings for c in f["cites"]}
+    phantom = sorted({c for c in all_cites if c not in valid})
     gates.append(("citations-resolve", not phantom,
                   "alle Zitate existieren in reference/" if not phantom
                   else f"nicht auffindbar: {phantom}"))
@@ -257,7 +262,7 @@ def evaluate(report_path, key_path, conv, valid):
     has_bdsg, has_nrw = "BDSG" in geprueft, "DSG NRW" in geprueft
     if has_bdsg != has_nrw:
         foreign = "DSG-NRW-" if has_bdsg else "BDSG-"
-        mixed = sorted({c for f in findings for c in f["cites"] if c.startswith(foreign)})
+        mixed = sorted({c for c in all_cites if c.startswith(foreign)})
         gates.append(("module-consistency", not mixed,
                       ("nur Zitate aus dem angegebenen Modul" if not mixed
                        else f"Modul laut Kopf: {'BDSG' if has_bdsg else 'DSG NRW'}, aber zitiert: {mixed}")))

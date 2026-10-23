@@ -26,7 +26,7 @@ When you operate this folder on real documents, the audit is not the last step, 
 2. **Read** the documents in `input/`.
 3. **Produce `report.md`** in the job folder. Either the single-column format defined below, or the two-sided platform format in `perspectives.md`. Both are accepted.
 4. **Audit your own output.** Run `python audit/checks.py jobs/<this>/report.md --report jobs/<this>/eval.md`. It validates both formats: coverage, valid severities, that every citation resolves against `reference/`, open decisions present, and honest counts. If any gate fails, fix the report and rerun. **Never hand over a report that fails its own auditor.** (This is the step a cold run skipped; it is the one that makes the result trustworthy.)
-5. **Render the page.** Run `python render/render.py jobs/<this>/report.md -o jobs/<this>/report.html` (add `--demo` for a synthetic or example report). This turns the report into the forwardable one-pager automatically; do not hand-build the HTML.
+5. **Render the page.** The one-pager is built from the two-sided platform format. If `report.md` is already in that format, run `python render/render.py jobs/<this>/report.md -o jobs/<this>/report.html`. If it is single-column, first write `report.platform.md` from the same findings (format in `perspectives.md`; same classes, same citations), check it with `python audit/checks.py jobs/<this>/report.platform.md --report jobs/<this>/eval.platform.md`, then render that file. `render.py` refuses a report without the findings table rather than print an empty page. Add `--demo` for a synthetic or example report; do not hand-build the HTML.
 
 The finished job folder holds `input/`, `report.md`, `report.html` and `eval.md`: a self-contained, reproducible record. Job folders are confidential and git-ignored; do not commit real ones.
 
@@ -79,6 +79,9 @@ Wichtigste offene Entscheidung: <ein Satz>
 - Standard: <ID> „<verbatim Kurzzitat>"
 - Bewertung: <ein bis drei Sätze>
 - Offene Entscheidung (DSB): <nur bei FLAG/FAIL>
+
+## Ergänzendes Recht
+<Ergebnis der Ergänzenden Ebene aus checklist.md: BDSG oder Landesrecht, zuständige Aufsicht, bei Bedarf eine eigene Offene Entscheidung; oder welches Modul fehlt>
 
 ## Hinweis
 Diese Vorprüfung ersetzt nicht die Entscheidung der oder des Datenschutzbeauftragten bzw. der Verantwortlichen. Sie strukturiert und beschleunigt sie.

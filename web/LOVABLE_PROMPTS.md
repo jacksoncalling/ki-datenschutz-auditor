@@ -380,7 +380,7 @@ Polish the audit page:
 ## After prompt 5: test before you share
 
 1. `audit/fixtures/01-clean-pass/dossier.md` → expect 5× CLEAR PASS. `02-narrow-flags` → 5× NARROW FLAG. `03-clear-fail` → 5× CLEAR FAIL. (Run these as "Öffentliche Stelle, NRW": that's what they were written for.)
-2. The new company fixture (from the repo work) → matches its key.
+2. `audit/fixtures/04-company-mixed/` (dossier + einsatzkontext, run as "Unternehmen, NRW") → 2 PASS, 2 FLAG, 1 FAIL, matching `audit/keys/04-company-mixed.key.md`.
 3. `demo/dossier.md` → compare with `demo/cold-run/report.md`; **PS-3 must be NARROW FLAG**.
 4. Repeat 1–3 with `AUDIT_MODEL = claude-haiku-5-5`. If everything still matches, switch to Haiku.
 5. A second account must not see the first account's audits or files.

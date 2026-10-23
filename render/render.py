@@ -155,6 +155,13 @@ def main():
     with open(args.report, encoding="utf-8") as f:
         md = f.read()
     data = parse(md)
+    if not data["_findings"]:
+        # a single-column report has no findings table; rendering it would print
+        # "0 Prüfschritte" and hide every finding (found by the company cold run)
+        sys.exit("render.py: no findings table ('| [PS-n] … |' rows) in %s.\n"
+                 "render.py reads the two-sided platform format (perspectives.md). "
+                 "Write report.platform.md from the same findings, check it with "
+                 "audit/checks.py, and render that." % args.report)
     data["DEMO_TAG"] = "Musterbericht · fiktives Beispiel" if args.demo else ""
     out = build(data)
     dest = args.out or os.path.splitext(args.report)[0] + ".html"

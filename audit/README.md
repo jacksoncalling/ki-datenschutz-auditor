@@ -35,11 +35,12 @@ Exit code 0 if every hard gate passes, 1 if any fails. Usable as a CI gate befor
 
 ## The fixtures and what they prove
 
-Three synthetic vendor dossiers in `fixtures/`, one per outcome, so the auditor is shown to *discriminate*, not just pass:
+Four synthetic vendor dossiers in `fixtures/`: one per outcome, so the auditor is shown to *discriminate*, not just pass, plus one mixed company case:
 
 - `01-clean-pass/` → a compliant, EU-hosted, closed-system tool → all five checks CLEAR PASS.
 - `02-narrow-flags/` → an ambiguous SaaS that is silent on the load-bearing points → all five NARROW FLAG. This is the class the tool exists for.
 - `03-clear-fail/` → a US open system with autonomous decisions and training on customer data → all five CLEAR FAIL.
+- `04-company-mixed/` → a **company** (Köln, works council) pre-sorting job applications, with an `einsatzkontext.md` next to the dossier → 2 PASS, 2 FLAG, 1 FAIL (auto-sent rejections). The first mixed fixture and the first that exercises the BDSG module. Its key was committed before a cold agent ran it; the cold run matched the key on all five checks (`reports/04-company-mixed.*`, including the agent's `walk-log.md`).
 
 The answer keys live in `keys/`, **outside `fixtures/`**, so a fixture never carries its own answer into the room.
 

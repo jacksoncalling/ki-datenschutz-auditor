@@ -22,7 +22,8 @@ Complete and committed locally. NOT yet pushed to GitHub (submission needs a pub
 - **Einsatzkontext** added (`rules.md` step 0): intended use, affected people, Art. 9 data, decisions about people, organisation type, role. Rule: it decides what applies, never that the vendor complies. Report header gains an `Einsatzkontext:` line (optional for `checks.py`).
 - **BDSG module** `reference/bdsg.md` for companies (§ 1(1), § 2(4), § 22, § 26, § 37, § 38, § 40(1-2)), wired into `checklist.md` ("Ergänzende Ebene"), `checks.py` (`[BDSG-§n-k]` IDs; 116 valid IDs now) and `conventions.json`. Extracted from the `bundestag/gesetze` mirror, then **verified word for word** against the official gesetze-im-internet.de XML (Stand 12.5.2026, via the QuantLaw daily archive): 18/18 Absätze identical. Re-check with `python audit/verify_bdsg.py`.
 - **Web service plan** in `web/`: `PLAN.md` (architecture: Lovable front end + Supabase + one Claude call with the folder as system prompt + checks.py gates ported), `USER_STORIES.md` (incl. PDF download), `LOVABLE_PROMPTS.md`. Model: Sonnet 5.5 default, Haiku 5.5 to be tested against the fixtures.
-- Next: company fixture + key, `web/export_bundle.py` (system prompt + valid-ids.json + schema), parity test.
+- **Company fixture** `audit/fixtures/04-company-mixed` (+ `einsatzkontext.md`), key frozen before a cold-agent run; the cold run matched 5/5 (2 PASS, 2 FLAG, 1 FAIL). Its walk-log led to three fixes: render.py refuses single-column reports, `## Ergänzendes Recht` is part of the format and all report citations are gated, § 38 DSB note placement for PASS. See `audit/FINDINGS.md`.
+- Next: `web/export_bundle.py` (system prompt + valid-ids.json + schema), parity test.
 
 ## Stack
 
