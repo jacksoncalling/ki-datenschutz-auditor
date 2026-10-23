@@ -43,7 +43,9 @@ The web version of the KI-Datenschutz-Prüfassistent, as seen by the people usin
 - I must tick "Vorprüfung, keine Rechtsberatung" before starting.
 - The page shows live steps (reading documents → checks running → report being verified) without reloading.
 - If something fails I see a plain German message and a "Erneut versuchen" button.
-- A report that fails the built-in quality gates (all five checks, real citations, open decision on every gap) is never shown.
+- A report that fails the built-in quality gates (all five checks, real citations anywhere in the text, only the law module that fits my organisation, open decision on every gap) is never shown. The gates are the same as the repo's `checks.py`.
+- If the check takes too long, the audit is marked failed after 10 minutes instead of spinning forever.
+- If the tool processes no personal data or is not an AI application, I get "Prüfung nicht anwendbar" with the reason, and no report or downloads.
 
 ## US-5: Read the report
 

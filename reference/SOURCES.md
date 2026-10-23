@@ -34,7 +34,7 @@ Everything in `reference/` is a verbatim excerpt of a real, external, published 
 - **Verbatim source used:** the `bundestag/gesetze` mirror of the official gesetze-im-internet.de text, https://raw.githubusercontent.com/bundestag/gesetze/master/b/bdsg_2018/index.md (retrieved 2026-10-23). Text extracted by script; only line wraps were joined and runs of spaces collapsed. Every extracted line was checked to appear verbatim in the source.
 - **Authoritative cross-reference:** https://www.gesetze-im-internet.de/bdsg_2018/
 - **Open verification item:** the mirror states its text as amended up to 23.6.2021. The official site could not be reached from the build environment, so the module **must be compared against gesetze-im-internet.de before production use**, in particular for later amendments to the included sections. Until that is done, treat the module as provisional.
-- **Applicability note on § 26 Abs. 1:** EuGH, 30.03.2023, C-34/21, on the identically worded § 23 Abs. 1 HDSIG. The note in `bdsg.md` is interpretation, kept outside the verbatim text.
+- **Applicability of § 26 Abs. 1 (interpretation, deliberately not in `bdsg.md`):** EuGH, 30.03.2023, C-34/21, on the identically worded § 23 Abs. 1 HDSIG: such a national rule may only be applied if it meets Art. 88 Abs. 2 DSGVO. Since then § 26 Abs. 1 Satz 1 BDSG is widely regarded as no longer usable as a legal basis; employee data rests on Art. 6 Abs. 1 DSGVO directly. `checklist.md` ("Ergänzende Ebene") tells the auditor to cite § 26 for classification, never as the sole legal basis.
 
 ## Fixtures
 

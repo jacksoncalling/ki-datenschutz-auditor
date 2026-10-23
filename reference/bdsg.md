@@ -2,14 +2,14 @@
 
 > Dies ist das **Bundes-Modul fuer Unternehmen**. Es ersetzt fuer nichtoeffentliche Stellen (Unternehmen, Vereine, Selbststaendige) das Staaten-Modul: Fuer oeffentliche Stellen der Laender und Gemeinden gilt das jeweilige Landesdatenschutzgesetz (hier `dsg-nrw.md`), fuer Unternehmen gilt ergaenzend zur DSGVO das BDSG (§ 1 Abs. 1 Satz 2 BDSG). Der Kern des Auditors (DSGVO + DSK-Orientierungshilfe KI, PS-0 bis PS-4) ist fuer beide identisch. Welches Modul gilt, entscheidet die Angabe "Organisation" im Einsatzkontext (siehe `rules.md`).
 
-**Zustaendige Aufsichtsbehoerde fuer Unternehmen:** die nach Landesrecht zustaendige Behoerde am Sitz des Unternehmens (§ 40 Abs. 1 BDSG), bei mehreren Niederlassungen die Hauptniederlassung (§ 40 Abs. 2 BDSG). In NRW ist das die LDI NRW (dieselbe Behoerde wie fuer oeffentliche Stellen); in anderen Laendern kann die Aufsicht fuer Unternehmen eine andere Behoerde sein als fuer oeffentliche Stellen (z. B. Bayern: BayLDA fuer Unternehmen, BayLfD fuer oeffentliche Stellen).
+**Zustaendige Aufsichtsbehoerde fuer Unternehmen:** siehe § 40 Abs. 1 und 2 BDSG unten. Hinweise zur Anwendung stehen in `checklist.md` ("Ergaenzende Ebene"), nicht in dieser Datei.
 
 > **Quelle (verbatim):** Bundesdatenschutzgesetz vom 30. Juni 2017 (BGBl. I S. 2097), Text aus dem Spiegel der amtlichen Fassung von gesetze-im-internet.de im Repository `bundestag/gesetze`: https://raw.githubusercontent.com/bundestag/gesetze/master/b/bdsg_2018/index.md . Amtlich: https://www.gesetze-im-internet.de/bdsg_2018/ . Abgerufen: 2026-10-23.
 > **Textstand laut Quelle:** zuletzt geaendert durch Art. 12 G v. 20.11.2019 (BGBl. I 1626), Aenderung durch Art. 10 G v. 23.6.2021 (BGBl. I 1858) eingearbeitet. **Vor dem Produktivbetrieb gegen gesetze-im-internet.de abgleichen** (der amtliche Abruf war aus der Build-Umgebung gesperrt; siehe `SOURCES.md`).
 
 **Zitierweise:** `[BDSG-§<n>-<Absatz>]`, z. B. `[BDSG-§26-1]`, `[BDSG-§38-1]`.
 
-**Hinweis zur Anwendbarkeit von § 26 Abs. 1 Satz 1:** Der EuGH hat am 30.03.2023 (C-34/21) zu der wortgleichen hessischen Regelung (§ 23 Abs. 1 HDSIG) entschieden, dass eine solche nationale Norm nur angewendet werden darf, wenn sie die Anforderungen des Art. 88 Abs. 2 DSGVO erfuellt. Seitdem wird § 26 Abs. 1 Satz 1 BDSG ueberwiegend als nicht mehr anwendbar angesehen; Beschaeftigtendaten werden dann direkt auf Art. 6 Abs. 1 DSGVO gestuetzt. Der Auditor zitiert § 26 deshalb fuer die **Einordnung** (Beschaeftigtendaten, Einwilligung im Arbeitsverhaeltnis Abs. 2, besondere Kategorien Abs. 3, Kollektivvereinbarungen Abs. 4, Beteiligungsrechte Abs. 6), nicht als alleinige Rechtsgrundlage. Diese Anmerkung ist Auslegung, nicht Gesetzestext.
+**Auslegung:** Unterhalb der Trennlinie steht nur Gesetzestext. Die Auslegung zu § 26 Abs. 1 (EuGH C-34/21) steht in `checklist.md` und `SOURCES.md`.
 
 Es sind nur die Paragrafen enthalten, auf die die Pruefschritte verweisen. Ausgelassene Absaetze sind vermerkt. Zeilenumbrueche der Quelle wurden zusammengefuehrt; der Wortlaut ist unveraendert.
 

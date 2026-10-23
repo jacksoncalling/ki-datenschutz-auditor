@@ -109,7 +109,7 @@ Nothing is strictly required; a missing document becomes a flagged gap (the fold
    └── Edge Function "run-audit"   ← the only place the Claude API key lives
           1. load documents (PDF → sent as PDF; DOCX/TXT/MD → text; links → fetched once, snapshot stored)
           2. call Claude: system = auditor bundle (cached), user = use case + documents, output = JSON report (schema-enforced)
-          3. run the gates (port of checks.py); retry once with the gate errors; else mark failed
+          3. run the gates (same as checks.py, incl. citations in the prose and module consistency); retry once; else mark failed
           4. save report_json + generated report_md + report_html; status = done
    ▼
  Anthropic API (Claude Sonnet 5.5 by default)

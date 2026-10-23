@@ -14,6 +14,7 @@ An auditor you cannot check is just an opinion generator. This folder is the pro
 | citations-resolve | every cited ID actually exists in `reference/` (no phantom cites) |
 | open-decision | every NARROW FLAG / CLEAR FAIL names an "Offene Entscheidung" |
 | count-honesty | the header counts match the findings actually present |
+| module-consistency | if the header names one extra module (BDSG or DSG NRW), no citation comes from the other one |
 | key-match | (optional, `--key`) each Prüfschritt's class matches the answer key |
 
 The clever part is `citations-resolve`: `checks.py` reads `reference/` at startup and builds the set of valid IDs from the actual structure of the standard (every article, paragraph, letter; every DSK section; every DSG-NRW paragraph). A finding that cites `[DSGVO-Art99-9]` fails, because Art. 99(9) is not in the reference. That is the mechanical version of the comp's own rule: every finding cites a provision a reader can open.

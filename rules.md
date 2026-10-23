@@ -4,7 +4,7 @@ The order of the audit, how findings cite the standard, how severity is decided,
 
 ## Procedure
 
-0. **Einsatzkontext.** Establish who is checking and why: the intended use (what the tool will be used for), whose data flows in (employees, applicants, customers, citizens, patients, none), whether special categories (Art. 9) are involved, whether the tool makes or prepares decisions about people, the **organisation type** (öffentliche Stelle or Unternehmen, plus Bundesland), and the role (wants to use the tool, or is the vendor checking its own paperwork). If the user did not say, ask once; if still unknown, assume the most protective reading and say so in the report.
+0. **Einsatzkontext.** Establish who is checking and why: the intended use (what the tool will be used for), whose data flows in (employees, applicants, customers, citizens, patients, none), whether special categories (Art. 9) are involved, whether the tool makes or prepares decisions about people, the **organisation type** (öffentliche Stelle or Unternehmen, plus Bundesland), and the role (wants to use the tool, or is the vendor checking its own paperwork). If the user did not say, ask once; if still unknown, assume the most protective reading for the threshold and Art. 22 (personal data and decisions about people are involved) and say so in the report. An unknown organisation type is the exception: then no extra module is applied (see `checklist.md`, "Ergänzende Ebene"), so the result stays reproducible.
 
    **The Einsatzkontext is the user's statement about their own plans, never evidence about the vendor.** Use it to decide *what applies* (the threshold, how likely a DSFA is, whether Art. 22 is engaged, which extra module applies). Never use it to decide *that the vendor complies*: that evidence comes only from the vendor's documents. The report states the Einsatzkontext at the top, so the reader sees what the result depends on.
 
@@ -65,9 +65,9 @@ Produce the report in **German** (the reader is a German DSB or decision-maker).
 ```
 # Datenschutz-Vorprüfung: <Produkt / Anbieter>
 Einsatzkontext: <ein Satz: Organisation, Einsatzzweck, betroffene Personen>
-Geprüft gegen: DSGVO + DSK-Orientierungshilfe KI (06.05.2024) + <DSG NRW | BDSG>
+Geprüft gegen: DSGVO + DSK-Orientierungshilfe KI (06.05.2024)[ + DSG NRW | + BDSG]
 Vorgelegte Unterlagen: <Liste> | Fehlend: <Liste>
-Datum: <YYYY-MM-DD>  ·  Zuständige Aufsicht: <LDI NRW | Behörde am Sitz des Unternehmens>
+Datum: <YYYY-MM-DD>  ·  Zuständige Aufsicht: <Behörde>
 
 ## Ergebnis auf einen Blick
 CLEAR PASS: n   ·   NARROW FLAG: n   ·   CLEAR FAIL: n
@@ -83,6 +83,8 @@ Wichtigste offene Entscheidung: <ein Satz>
 ## Hinweis
 Diese Vorprüfung ersetzt nicht die Entscheidung der oder des Datenschutzbeauftragten bzw. der Verantwortlichen. Sie strukturiert und beschleunigt sie.
 ```
+
+Which module and authority go in the header follows `checklist.md` ("Ergänzende Ebene"): "+ DSG NRW" and LDI NRW only for a public body in NRW; "+ BDSG" and the authority at the company's seat for a company; no extra module for a public body in another Land or an unknown organisation type (the report then says which layer is missing).
 
 If the Einsatzkontext was not given, write "Einsatzkontext: nicht angegeben, Bewertung unter der vorsichtigsten Annahme". Older reports without the line remain valid (`audit/checks.py` does not require it).
 

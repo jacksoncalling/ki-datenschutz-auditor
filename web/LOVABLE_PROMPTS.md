@@ -134,6 +134,7 @@ audits
   vendor text, product text,
   -- run
   status text check in ('draft','queued','running','done','failed') default 'draft',
+  outcome text check in ('report','nicht_anwendbar'),   -- set when status = 'done'
   status_message text, error text, auditor_version text, model text,
   report_json jsonb, report_md text, report_html text,
   count_pass int, count_flag int, count_fail int,
@@ -171,7 +172,12 @@ friendly German message when reached).
 Create a Supabase Edge Function "run-audit" (Deno, TypeScript). The front end calls it right after
 an audit is set to 'queued', with { audit_id }. Verify the caller's JWT and that the audit belongs
 to them. Respond immediately with 202 and do the work in the background (EdgeRuntime.waitUntil),
-updating audits.status / status_message as it goes.
+updating audits.status / status_message (and updated_at) at every step.
+
+Watchdog (a background task can be killed when the function hits its wall-clock limit, and then
+nobody writes 'failed'): add a pg_cron job every 5 minutes that sets status 'failed',
+error 'Zeitüberschreitung, bitte erneut versuchen' on audits that have been 'running' with no
+update for more than 10 minutes. The audit page shows that error with the retry button.
 
 Steps:
 
@@ -191,8 +197,10 @@ Steps:
    - system: the full contents of bundle/system-prompt.md as one text block with
      cache_control { type: 'ephemeral' } (identical for every audit, so it caches)
    - thinking: { type: 'adaptive' }; output_config: { effort: 'high', format: zodOutputFormat(ReportSchema) }
-   - client.messages.parse(...) with max_tokens 32000 (if a timeout appears, switch to
-     client.messages.stream(...) + finalMessage() and parse the JSON yourself)
+   - ALWAYS stream: client.messages.stream({...same params, max_tokens 32000...}) and
+     await .finalMessage(); then take the text block and validate it with
+     ReportSchema.parse(JSON.parse(text)). (A long non-streaming call can hit SDK/HTTP timeouts.)
+     Abort the request after 6 minutes (AbortController) and mark the audit failed.
    - the user message: first all document blocks, then one text block:
 
      "EINSATZKONTEXT (Angabe der prüfenden Organisation, kein Nachweis des Anbieters):
@@ -201,6 +209,7 @@ Steps:
       Besondere Kategorien (Art. 9): {special_categories}
       Entscheidungen über Menschen: {decisions_about_people}
       Organisation: {org_type}, Bundesland: {bundesland}. Rolle: {role}.
+      Anzuwendendes Zusatzmodul: {module_line}
       Anbieter: {vendor}. Produkt: {product}.
       Vorgelegte Unterlagen: {kinds + titles}. Fehlende Unterlagen: {missing kinds}.
 
@@ -219,7 +228,7 @@ Steps:
      produkt: string, anbieter: string, datum: string (YYYY-MM-DD),
      einsatzkontext_zusammenfassung: string,   // one sentence: which use case this result applies to
      vorgelegte_unterlagen: string[], fehlende_unterlagen: string[],
-     geprueft_gegen: string,                   // e.g. "DSGVO + DSK-Orientierungshilfe KI (06.05.2024) + DSG NRW"
+     geprueft_gegen: string,                   // ignored: code sets it from org_type/bundesland (step 4)
      zustaendige_aufsicht: string,
      schwelle: { personenbezogene_daten: boolean, ki_anwendung: boolean, begruendung: string },
      befunde: array of {
@@ -239,12 +248,32 @@ Steps:
      kurzfazit: string
    }
 
-3. status_message 'Bericht wird geprüft'. Run these gates in code (a port of the repo's
-   audit/checks.py); collect every violation as a German sentence:
-   - if schwelle.personenbezogene_daten and schwelle.ki_anwendung are both true: exactly one
-     finding for each of PS-0..PS-4, no duplicates (if either is false, PS-0 alone is allowed)
+   The extra module is decided in CODE, not by the model, before the call:
+     org_type 'unternehmen'                      → module 'BDSG',
+         module_line "BDSG (reference/bdsg.md)"
+     org_type 'oeffentlich' and bundesland 'NRW' → module 'DSG NRW',
+         module_line "DSG NRW (reference/dsg-nrw.md)"
+     org_type 'oeffentlich', other bundesland    → module none, module_line "keines (Landesmodul
+         für {bundesland} noch nicht enthalten; im Bericht unter Ergänzendes Recht vermerken)"
+
+3. status_message 'Bericht wird geprüft'.
+   Not applicable: if schwelle.personenbezogene_daten or schwelle.ki_anwendung is false, the
+   auditor does not apply. Save report_json, set outcome 'nicht_anwendbar', status 'done', and
+   generate NO report_md / report_html (the page shows "Prüfung nicht anwendbar" with
+   schwelle.begruendung; no downloads). Skip the gates below.
+
+   Otherwise run these gates in code. They mirror the repo's audit/checks.py exactly, so anything
+   shown on the site also passes checks.py; collect every violation as a German sentence:
+   - exactly one finding for each of PS-0..PS-4, no duplicates
    - every finding has at least one standard entry
-   - every standard.id is in bundle/valid-ids.json (strip surrounding brackets before comparing)
+   - citations resolve: collect every citation ID from standard[].id AND every match of the regex
+     /\[((?:DSGVO-Art|DSK-OH-|DSG-NRW-§|BDSG-§)[^\]]+)\]/ in ALL text fields of each finding
+     (fundstelle_dossier, standard[].zitat, bewertung, offene_entscheidung,
+     nutzer_naechste_handlung, anbieter_naechster_nachweis) and in ergaenzendes_recht_hinweis,
+     wichtigste_offene_entscheidung, kurzfazit. Strip brackets; every ID must be in
+     bundle/valid-ids.json. (A made-up citation hidden in the prose must fail too.)
+   - module consistency: module 'BDSG' → no ID starting "DSG-NRW-"; module 'DSG NRW' → no ID
+     starting "BDSG-"; module none → neither
    - every NARROW FLAG / CLEAR FAIL has a non-empty offene_entscheidung
    - fundstelle_dossier is non-empty
    If any gate fails: call Claude ONE more time with the same request plus the previous JSON and
@@ -252,6 +281,8 @@ Steps:
    still fails: status 'failed' with the violations in error. Never show a report that failed.
 
 4. Compute count_pass / count_flag / count_fail from befunde (never trust a model-written count).
+   Set geprueft_gegen in code: "DSGVO + DSK-Orientierungshilfe KI (06.05.2024)" plus
+   " + BDSG" or " + DSG NRW" according to the module (nothing for module none).
    Generate report_md in EXACTLY this format (the repo's rules.md format, plus the Einsatzkontext line):
 
    # Datenschutz-Vorprüfung: {produkt} / {anbieter}
@@ -282,7 +313,9 @@ Steps:
    Datenschutzbeauftragten. Sie strukturiert und beschleunigt sie.
 
    Also generate report_html: a standalone, printable HTML page of the same content (inline CSS,
-   no scripts). Save report_json, report_md, report_html, counts; status 'done'.
+   no scripts). Final check: extract all citation IDs from the finished report_md with the same
+   regex and check them against valid-ids.json once more. Save report_json, report_md,
+   report_html, counts; outcome 'report'; status 'done'.
 
 Errors: catch Anthropic SDK errors by type (rate limit → 'failed' with "Gerade ausgelastet, bitte
 in einigen Minuten erneut versuchen"; others → generic German message). Never log document
@@ -353,4 +386,5 @@ Polish the audit page:
 5. A second account must not see the first account's audits or files.
 6. Download a report_md and run `python audit/checks.py <file>` on it → must pass.
 7. Download the PDF on your phone and on a laptop: check the US-6 list in `USER_STORIES.md` (umlauts, page footer, selectable text, prints fine in black and white).
-8. Run one audit as "Unternehmen" with employee data (e.g. "Bewerbungen vorsortieren"): the report should cite the BDSG (§ 26, and § 38 if a DSFA is likely).
+8. Run one audit as "Unternehmen" with employee data (e.g. "Bewerbungen vorsortieren"): the report should cite the BDSG (§ 26, and § 38 if a DSFA is likely) and no DSG NRW.
+9. Upload something that is clearly not an AI tool or has no personal data: the page should say "Prüfung nicht anwendbar" with a reason and offer no downloads.
