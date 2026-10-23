@@ -4,7 +4,8 @@
   "reference_files": {
     "dsgvo": "dsgvo-artikel.md",
     "dsk": "dsk-oh-ki.md",
-    "state": "dsg-nrw.md"
+    "state": "dsg-nrw.md",
+    "bdsg": "bdsg.md"
   },
   "severities": ["CLEAR PASS", "NARROW FLAG", "CLEAR FAIL"],
   "required_checks": ["PS-0", "PS-1", "PS-2", "PS-3", "PS-4"],

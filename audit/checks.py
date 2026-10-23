@@ -9,10 +9,13 @@ would ask before trusting the report:
   1. Does it cover every required Prüfschritt?
   2. Is every finding classified with a valid severity?
   3. Does every finding cite at least one provision?
-  4. Does every cited provision actually EXIST in reference/ (no phantom cites)?
+  4. Does every cited provision actually EXIST in reference/ (no phantom cites),
+     anywhere in the report, not only inside the findings?
   5. Does every NARROW FLAG / CLEAR FAIL carry an "Offene Entscheidung" line?
   6. Do the header counts match the findings actually present (gate honesty)?
-  7. (optional, --key) Does each Prüfschritt's class match the answer key?
+  7. If the header names one extra module (BDSG or DSG NRW), are all module
+     citations from that module (no state law in a company report, and vice versa)?
+  8. (optional, --key) Does each Prüfschritt's class match the answer key?
 
 No model, no judgment. The one semantic call -- does the cited text actually
 support the finding -- is layer 2, audit/compliance-judge.md.
@@ -75,14 +78,26 @@ def valid_ids_from_reference(conv, base):
             if cur:
                 for k in re.findall(r'\*\*\((\d+)\)\*\*', line):
                     ids.add(f"DSG-NRW-§{cur}-{k}")
+
+    # Federal module for companies: ## § N BDSG ; **(k)**
+    bdsg = os.path.join(ref_dir, conv["reference_files"].get("bdsg", ""))
+    if conv["reference_files"].get("bdsg") and os.path.exists(bdsg):
+        cur = None
+        for line in read_text(bdsg).splitlines():
+            m = re.match(r'## § (\d+) BDSG', line)
+            if m:
+                cur = m.group(1); ids.add(f"BDSG-§{cur}"); continue
+            if cur:
+                for k in re.findall(r'\*\*\((\d+)\)\*\*', line):
+                    ids.add(f"BDSG-§{cur}-{k}")
     return ids
 
 # ---------- parse the report ----------
 
-CITE_RE = re.compile(r'\[((?:DSGVO-Art|DSK-OH-|DSG-NRW-§)[^\]]+)\]')
+CITE_RE = re.compile(r'\[((?:DSGVO-Art|DSK-OH-|DSG-NRW-§|BDSG-§)[^\]]+)\]')
 
 def normalize_id(raw):
-    # strip spaces; unify. Accept DSGVO-Art22-1, DSK-OH-1.9, DSG-NRW-§46-1
+    # strip spaces; unify. Accept DSGVO-Art22-1, DSK-OH-1.9, DSG-NRW-§46-1, BDSG-§26-1
     return raw.strip()
 
 def reference_integrity(conv, base):
@@ -136,7 +151,9 @@ def parse_report(path, conv):
     #  - single-column canonical: "### [PS-n] <title> — <CLASS>" + "Offene Entscheidung:" line
     #  - two-sided platform table: "| [PS-n] title | CLASS | STANDARD | Kommune… | Anbieter… |"
     findings = []
-    dec_re = re.compile(r'(?m)^\s*[-*]?\s*' + re.escape(marker) + r'[^\n]*:')
+    # the open-decision line must carry text after its label; an empty
+    # "Offene Entscheidung (DSB):" is no decision (found by web/test_parity.py)
+    dec_re = re.compile(r'(?m)^\s*[-*]?\s*' + re.escape(marker) + r'[^\n:]*:[ \t]*\S')
     parts = re.split(r'(?m)^### ', text)
     for p in parts[1:]:
         head = p.splitlines()[0]
@@ -215,8 +232,12 @@ def evaluate(report_path, key_path, conv, valid):
     gates.append(("has-citation", not no_cite,
                   "jeder Befund zitiert" if not no_cite else f"ohne Zitat: {no_cite}"))
 
-    # G4 no phantom citations
-    phantom = sorted({c for f in findings for c in f["cites"] if c not in valid})
+    # G4 no phantom citations, anywhere in the report: inside the findings and
+    # in the other sections too (e.g. "Ergänzendes Recht"), which a finding
+    # block does not reach. (Found by the company cold run.)
+    report_cites = {normalize_id(c) for c in CITE_RE.findall(read_text(report_path))}
+    all_cites = report_cites | {c for f in findings for c in f["cites"]}
+    phantom = sorted({c for c in all_cites if c not in valid})
     gates.append(("citations-resolve", not phantom,
                   "alle Zitate existieren in reference/" if not phantom
                   else f"nicht auffindbar: {phantom}"))
@@ -235,7 +256,20 @@ def evaluate(report_path, key_path, conv, valid):
                   f"Kopfzahl stimmt {actual}" if counts_ok
                   else f"Kopf={counts} vs. tatsächlich={actual}"))
 
-    # G7 key match (optional)
+    # G7 module consistency: a company report (BDSG) cites no state-law IDs and
+    # a public-body report (DSG NRW) cites no BDSG IDs. Read from the
+    # "Geprüft gegen" line; reports that name neither module skip this gate.
+    mg = re.search(r'(?m)^Geprüft gegen:\s*(.+)$', read_text(report_path))
+    geprueft = mg.group(1) if mg else ""
+    has_bdsg, has_nrw = "BDSG" in geprueft, "DSG NRW" in geprueft
+    if has_bdsg != has_nrw:
+        foreign = "DSG-NRW-" if has_bdsg else "BDSG-"
+        mixed = sorted({c for c in all_cites if c.startswith(foreign)})
+        gates.append(("module-consistency", not mixed,
+                      ("nur Zitate aus dem angegebenen Modul" if not mixed
+                       else f"Modul laut Kopf: {'BDSG' if has_bdsg else 'DSG NRW'}, aber zitiert: {mixed}")))
+
+    # G8 key match (optional)
     if key_path:
         expected = parse_key(key_path)
         mism = []

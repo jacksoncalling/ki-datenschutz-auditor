@@ -1,0 +1,42 @@
+{
+  "_comment": "Gate settings for the web engine; mirror of audit/conventions.json + checks.py. Port web/reference_impl.py run_gates() against these.",
+  "required_checks": [
+    "PS-0",
+    "PS-1",
+    "PS-2",
+    "PS-3",
+    "PS-4"
+  ],
+  "severities": [
+    "CLEAR PASS",
+    "NARROW FLAG",
+    "CLEAR FAIL"
+  ],
+  "requires_open_decision": [
+    "NARROW FLAG",
+    "CLEAR FAIL"
+  ],
+  "citation_pattern": "\\[((?:DSGVO-Art|DSK-OH-|DSG-NRW-§|BDSG-§)[^\\]]+)\\]",
+  "modules": {
+    "unternehmen": {
+      "module": "BDSG",
+      "forbidden_prefixes": [
+        "DSG-NRW-"
+      ]
+    },
+    "oeffentlich_NRW": {
+      "module": "DSG NRW",
+      "forbidden_prefixes": [
+        "BDSG-"
+      ]
+    },
+    "oeffentlich_other": {
+      "module": null,
+      "forbidden_prefixes": [
+        "DSG-NRW-",
+        "BDSG-"
+      ]
+    }
+  },
+  "geprueft_gegen_core": "DSGVO + DSK-Orientierungshilfe KI (06.05.2024)"
+}

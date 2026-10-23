@@ -18,10 +18,25 @@ import re, sys, os, argparse, html
 CLS = {"CLEAR PASS": "pass", "NARROW FLAG": "flag", "CLEAR FAIL": "fail"}
 LABEL = {"CLEAR PASS": "Clear Pass", "NARROW FLAG": "Narrow Flag", "CLEAR FAIL": "Clear Fail"}
 WHO = {
-    "pass": ("Kommune", "Anbieter"),
-    "flag": ("Kommune · nächste Handlung", "Anbieter · nächster Nachweis"),
-    "fail": ("Kommune · nicht freigeben", "Anbieter · muss geändert werden"),
+    "pass": ("{k}", "{a}"),
+    "flag": ("{k} · nächste Handlung", "{a} · nächster Nachweis"),
+    "fail": ("{k} · nicht freigeben", "{a} · muss geändert werden"),
 }
+# how the demand side is named in running text ("Für die Kommune ...")
+NUTZER_PHRASE = {"Kommune": "die Kommune", "Unternehmen": "das Unternehmen",
+                 "Öffentliche Stelle": "die öffentliche Stelle"}
+
+def parties(md):
+    """Party names from the findings table header, e.g. "Unternehmen: nächste
+    Handlung" -> "Unternehmen". Falls back to Kommune / Anbieter."""
+    for line in md.splitlines():
+        if re.match(r'\s*\|\s*Prüfschritt\s*\|', line):
+            cols = [c.strip() for c in line.strip().strip("|").split("|")]
+            if len(cols) >= 5:
+                k = cols[3].split(":")[0].strip() or "Kommune"
+                a = cols[4].split(":")[0].strip() or "Anbieter"
+                return k, a
+    return "Kommune", "Anbieter"
 
 def esc(s):
     return html.escape(s.strip())
@@ -76,6 +91,7 @@ def parse(md):
         findings.append(dict(ps=ps, title=title, klass=klass, cls=cls,
                              cites=cites, kommune=cols[3], anbieter=cols[4]))
     d["_findings"] = findings
+    d["_parties"] = parties(md)
     return d
 
 ROW = """    <article class="row {cls}" tabindex="0">
@@ -96,10 +112,11 @@ def build(d):
     for x in f:
         counts[x["cls"]] += 1
 
+    party_k, party_a = d["_parties"]
     rows, segs, labels = [], [], []
     for x in f:
         cls = x["cls"]
-        who_k, who_a = WHO[cls]
+        who_k, who_a = (w.format(k=party_k, a=party_a) for w in WHO[cls])
         cites = "".join('<span class="cite">%s</span>' % esc(c) for c in x["cites"])
         rows.append(ROW.format(cls=cls, ps=esc(x["ps"]), title=esc(x["title"]),
                                label=LABEL.get(x["klass"].upper(), x["klass"]),
@@ -117,6 +134,7 @@ def build(d):
         "STRIP_SEGS": "".join(segs), "STRIP_LABELS": "".join(labels),
         "VERDICT_LEAD": esc(d["VERDICT_LEAD"]), "VERDICT_REST": esc(d["VERDICT_REST"]),
         "FINDINGS": "\n".join(rows),
+        "NUTZER_PHRASE": esc(NUTZER_PHRASE.get(party_k, "die nutzende Seite")),
     }
     tpl_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "template.html")
     with open(tpl_path, encoding="utf-8") as f:
@@ -138,6 +156,13 @@ def main():
     with open(args.report, encoding="utf-8") as f:
         md = f.read()
     data = parse(md)
+    if not data["_findings"]:
+        # a single-column report has no findings table; rendering it would print
+        # "0 Prüfschritte" and hide every finding (found by the company cold run)
+        sys.exit("render.py: no findings table ('| [PS-n] … |' rows) in %s.\n"
+                 "render.py reads the two-sided platform format (perspectives.md). "
+                 "Write report.platform.md from the same findings, check it with "
+                 "audit/checks.py, and render that." % args.report)
     data["DEMO_TAG"] = "Musterbericht · fiktives Beispiel" if args.demo else ""
     out = build(data)
     dest = args.out or os.path.splitext(args.report)[0] + ".html"

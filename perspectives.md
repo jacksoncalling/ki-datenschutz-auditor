@@ -2,7 +2,7 @@
 
 The same audit, read from both sides of the table. One dossier, one set of findings, one set of citations, one severity per Prüfschritt. What differs is only the **next action**, because a gap means something different to each party:
 
-- **Kommune (Nachfrageseite):** what to require or clarify before approving.
+- **Kommune or Unternehmen (Nachfrageseite, the organisation that wants to use the tool):** what to require or clarify before approving. For a company the column reads "Unternehmen: nächste Handlung" (or "Nutzer: nächste Handlung").
 - **Anbieter (Angebotsseite):** what to document or contractually secure before offering.
 
 This exists because the real situation is usually not a city auditing a stranger. It is a **Kommune and a Startup already trying to work together**, both needing the same contract to get to signature. The audit becomes a shared punch-list, not a verdict handed down. Both parties open the same report and see the same gaps, described in their own terms.

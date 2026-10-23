@@ -1,6 +1,6 @@
 # SOURCES.md — Provenance of the standard
 
-Everything in `reference/` is a verbatim excerpt of a real, external, published standard. This file records exactly where each excerpt came from, so a reviewer can open the finding, open the cited provision here, and open the official source, and confirm all three match. Retrieval date for all sources: **2026-09-07**.
+Everything in `reference/` is a verbatim excerpt of a real, external, published standard. This file records exactly where each excerpt came from, so a reviewer can open the finding, open the cited provision here, and open the official source, and confirm all three match. Retrieval date: **2026-09-07** (BDSG module: 2026-10-23).
 
 ## dsgvo-artikel.md — Datenschutz-Grundverordnung (DSGVO)
 
@@ -26,6 +26,15 @@ Everything in `reference/` is a verbatim excerpt of a real, external, published 
 - **Authoritative cross-reference:** https://recht.nrw.de/lrgv/gesetz/25052018-datenschutzgesetz-nordrhein-westfalen-dsg-nrw/
 - **Competent authority:** Landesbeauftragte für Datenschutz und Informationsfreiheit Nordrhein-Westfalen (LDI NRW), https://www.ldi.nrw.de , which adopts the DSK-Orientierungshilfe KI as the yardstick for Unternehmen und Behörden.
 - **Applicability note on § 46:** § 46 DSG NRW implements the JI-Directive (police/justice). It is included as the NRW legislator's expression of the ban on adverse purely automated decisions; for ordinary municipal administration Art. 22 DSGVO applies directly, plus § 35a VwVfG for a fully automated Verwaltungsakt. This nuance is stated in the file itself and in `[DSK-OH-1.6]`.
+
+## bdsg.md — Bundesdatenschutzgesetz (the federal module for companies)
+
+- **Instrument:** Bundesdatenschutzgesetz (BDSG) vom 30. Juni 2017 (BGBl. I S. 2097).
+- **Sections included:** § 1 Abs. 1 (scope, incl. nichtöffentliche Stellen), § 2 Abs. 4 (definition of nichtöffentliche Stellen), § 22 (besondere Kategorien), § 26 (Beschäftigtendaten), § 37 (automatisierte Einzelentscheidungen), § 38 (Datenschutzbeauftragte nichtöffentlicher Stellen), § 40 Abs. 1-2 (Aufsichtsbehörden der Länder).
+- **Verbatim source used:** the `bundestag/gesetze` mirror of the official gesetze-im-internet.de text, https://raw.githubusercontent.com/bundestag/gesetze/master/b/bdsg_2018/index.md (retrieved 2026-10-23). Text extracted by script; only line wraps were joined and runs of spaces collapsed. Every extracted line was checked to appear verbatim in the source.
+- **Authoritative cross-reference:** https://www.gesetze-im-internet.de/bdsg_2018/
+- **Verified against the official text (2026-10-23):** the mirror is only current to 23.6.2021, so every included Absatz was compared with the official gesetze-im-internet.de XML (`BJNR209710017.xml`) as archived that day by the QuantLaw daily archive (https://github.com/QuantLaw/gesetze-im-internet, branch `data`; the official site itself was not reachable from the build environment). Official Stand: "zuletzt geändert durch Art. 3 G v. 12.5.2026 I Nr. 139"; note: "Änderung durch Art. 3 G v. 3.7.2026 I Nr. 199 textlich nachgewiesen, dokumentarisch noch nicht abschließend bearbeitet". Result: **18 of 18 Absätze identical.** The amendments since 2021 touched other sections only (§ 9, § 62, § 70, plus hyphenation fixes in § 4, § 31, § 67). Re-run any time with `python audit/verify_bdsg.py` (exit 0 = identical); receipt in `audit/reports/bdsg.verify.md`.
+- **Applicability of § 26 Abs. 1 (interpretation, deliberately not in `bdsg.md`):** EuGH, 30.03.2023, C-34/21, on the identically worded § 23 Abs. 1 HDSIG: such a national rule may only be applied if it meets Art. 88 Abs. 2 DSGVO. Since then § 26 Abs. 1 Satz 1 BDSG is widely regarded as no longer usable as a legal basis; employee data rests on Art. 6 Abs. 1 DSGVO directly. `checklist.md` ("Ergänzende Ebene") tells the auditor to cite § 26 for classification, never as the sole legal basis.
 
 ## Fixtures
 

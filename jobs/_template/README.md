@@ -14,6 +14,6 @@ Copy this `_template/` folder to `jobs/<anbieter>-<YYYY-MM-DD>/` and rename this
 1. Put the submitted documents in `input/`.
 2. Produce `report.md` by auditing them against the folder's checklist.
 3. `python audit/checks.py jobs/<this>/report.md --report jobs/<this>/eval.md` (must exit 0).
-4. `python render/render.py jobs/<this>/report.md -o jobs/<this>/report.html`.
+4. Render: `render.py` needs the two-sided format. For a single-column `report.md`, write `report.platform.md` (see `perspectives.md`), check it with `checks.py`, then `python render/render.py jobs/<this>/report.platform.md -o jobs/<this>/report.html`.
 
 Notes for this job (contacts, scope, what was missing) can go below.
