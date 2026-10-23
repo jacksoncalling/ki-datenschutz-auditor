@@ -1,6 +1,6 @@
 # SOURCES.md — Provenance of the standard
 
-Everything in `reference/` is a verbatim excerpt of a real, external, published standard. This file records exactly where each excerpt came from, so a reviewer can open the finding, open the cited provision here, and open the official source, and confirm all three match. Retrieval date for all sources: **2026-09-07**.
+Everything in `reference/` is a verbatim excerpt of a real, external, published standard. This file records exactly where each excerpt came from, so a reviewer can open the finding, open the cited provision here, and open the official source, and confirm all three match. Retrieval date: **2026-09-07** (BDSG module: 2026-10-23).
 
 ## dsgvo-artikel.md — Datenschutz-Grundverordnung (DSGVO)
 
@@ -26,6 +26,15 @@ Everything in `reference/` is a verbatim excerpt of a real, external, published 
 - **Authoritative cross-reference:** https://recht.nrw.de/lrgv/gesetz/25052018-datenschutzgesetz-nordrhein-westfalen-dsg-nrw/
 - **Competent authority:** Landesbeauftragte für Datenschutz und Informationsfreiheit Nordrhein-Westfalen (LDI NRW), https://www.ldi.nrw.de , which adopts the DSK-Orientierungshilfe KI as the yardstick for Unternehmen und Behörden.
 - **Applicability note on § 46:** § 46 DSG NRW implements the JI-Directive (police/justice). It is included as the NRW legislator's expression of the ban on adverse purely automated decisions; for ordinary municipal administration Art. 22 DSGVO applies directly, plus § 35a VwVfG for a fully automated Verwaltungsakt. This nuance is stated in the file itself and in `[DSK-OH-1.6]`.
+
+## bdsg.md — Bundesdatenschutzgesetz (the federal module for companies)
+
+- **Instrument:** Bundesdatenschutzgesetz (BDSG) vom 30. Juni 2017 (BGBl. I S. 2097).
+- **Sections included:** § 1 Abs. 1 (scope, incl. nichtöffentliche Stellen), § 2 Abs. 4 (definition of nichtöffentliche Stellen), § 22 (besondere Kategorien), § 26 (Beschäftigtendaten), § 37 (automatisierte Einzelentscheidungen), § 38 (Datenschutzbeauftragte nichtöffentlicher Stellen), § 40 Abs. 1-2 (Aufsichtsbehörden der Länder).
+- **Verbatim source used:** the `bundestag/gesetze` mirror of the official gesetze-im-internet.de text, https://raw.githubusercontent.com/bundestag/gesetze/master/b/bdsg_2018/index.md (retrieved 2026-10-23). Text extracted by script; only line wraps were joined and runs of spaces collapsed. Every extracted line was checked to appear verbatim in the source.
+- **Authoritative cross-reference:** https://www.gesetze-im-internet.de/bdsg_2018/
+- **Open verification item:** the mirror states its text as amended up to 23.6.2021. The official site could not be reached from the build environment, so the module **must be compared against gesetze-im-internet.de before production use**, in particular for later amendments to the included sections. Until that is done, treat the module as provisional.
+- **Applicability note on § 26 Abs. 1:** EuGH, 30.03.2023, C-34/21, on the identically worded § 23 Abs. 1 HDSIG. The note in `bdsg.md` is interpretation, kept outside the verbatim text.
 
 ## Fixtures
 

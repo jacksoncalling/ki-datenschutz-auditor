@@ -16,6 +16,14 @@ Complete and committed locally. NOT yet pushed to GitHub (submission needs a pub
 - `checks.py` validates BOTH the single-column and the two-sided platform format (a cold run produced the platform format, which the checker could not parse before). `render/` turns a report into an HTML one-pager. Each audit is a `jobs/<anbieter>-<date>/` folder holding `input/` (the submitted documents) + `report.md` + `report.html` + `eval.md` together, so a run is reproducible and re-checkable against its own sources. `rules.md` "Run flow" tells the operating agent to open a job folder, save the submitted docs to input/, produce the report, run the audit on its own output, and render (the cold run had skipped the audit, produced an unparseable format, and saved to a scratchpad). Job folders are confidential and git-ignored (only README + `_template/` are tracked), so real vendor documents never reach the public repo.
 - Open thread: which side to lead the go-to-market (startup readiness vs the pair), and adding state modules via regional-expert conversations (each convo = a relationship + a module + a possible pilot).
 
+## Current State (2026-10-23)
+
+- **Audience widened:** municipalities did not bite; the lead use case is now any company asking "is this AI vendor okay for what we want to use it for?". Kommunen stay supported.
+- **Einsatzkontext** added (`rules.md` step 0): intended use, affected people, Art. 9 data, decisions about people, organisation type, role. Rule: it decides what applies, never that the vendor complies. Report header gains an `Einsatzkontext:` line (optional for `checks.py`).
+- **BDSG module** `reference/bdsg.md` for companies (§ 1(1), § 2(4), § 22, § 26, § 37, § 38, § 40(1-2)), wired into `checklist.md` ("Ergänzende Ebene"), `checks.py` (`[BDSG-§n-k]` IDs; 116 valid IDs now) and `conventions.json`. **Provisional:** sourced from the `bundestag/gesetze` mirror (text as of 23.6.2021) because gesetze-im-internet.de was blocked from the build environment; must be compared against the official site before production (see `reference/SOURCES.md`).
+- **Web service plan** in `web/`: `PLAN.md` (architecture: Lovable front end + Supabase + one Claude call with the folder as system prompt + checks.py gates ported), `USER_STORIES.md` (incl. PDF download), `LOVABLE_PROMPTS.md`. Model: Sonnet 5.5 default, Haiku 5.5 to be tested against the fixtures.
+- Next: company fixture + key, `web/export_bundle.py` (system prompt + valid-ids.json + schema), parity test, BDSG verification.
+
 ## Stack
 
 None. Pure ICM: markdown files as agent architecture. One Python 3 stdlib script (`audit/checks.py`, no dependencies) for the deterministic eval. No server, no DB, no build.
@@ -32,7 +40,8 @@ Findings are three classes only: CLEAR PASS / NARROW FLAG / CLEAR FAIL. Citation
 
 - Entry/route: `README.md`
 - The auditor: `identity.md`, `rules.md`, `checklist.md`, `examples.md`
-- The standard: `reference/*.md` (+ `reference/SOURCES.md` for provenance)
+- The standard: `reference/*.md` (+ `reference/SOURCES.md` for provenance); `dsg-nrw.md` for public bodies, `bdsg.md` for companies
+- Web service plan: `web/PLAN.md`, `web/USER_STORIES.md`, `web/LOVABLE_PROMPTS.md`
 - The eval: `audit/checks.py`, `audit/compliance-judge.md`, `audit/conventions.json`
 - Fixtures/keys/receipts: `audit/fixtures/`, `audit/keys/`, `audit/reports/`
 - Demo: `demo/TEST_METHOD.md`, `demo/dossier.md`, `demo/cold-run/`
@@ -49,6 +58,7 @@ None. To run the eval: `python audit/checks.py --all`. To use the auditor: load 
 
 ## Phase History
 
+- 2026-10-23: widened to companies (Einsatzkontext, BDSG module, checks.py BDSG IDs), web service plan + user stories in `web/`.
 - 2026-09-07: built end to end (reference extraction, auditor files, eval, fixtures). Reviewed against Comp winner patterns (Adam James: frozen test method + cold-run evidence + boundary honesty; Jeff van Leenen: generated verifier, base wins). Added `--all` runner and cold-agent demo.
 
 ## Workflow Rules
@@ -56,4 +66,5 @@ None. To run the eval: `python audit/checks.py --all`. To use the auditor: load 
 - Keep the repo generic and public-safe: no client data, no real vendor/municipality. Synthetic fixtures only.
 - `reference/` is verbatim standard only; never paraphrase into it. New provisions go in with a SOURCES.md entry.
 - To add a Bundesland: replace `reference/dsg-nrw.md` and the state section in `checklist.md`. Nothing in PS-0..PS-4 changes.
+- Companies use `reference/bdsg.md` instead of the state module; public bodies use the state module. The organisation type comes from the Einsatzkontext.
 - Registered in HQ at `~/step-into-more/commons/repos.md`.

@@ -75,14 +75,26 @@ def valid_ids_from_reference(conv, base):
             if cur:
                 for k in re.findall(r'\*\*\((\d+)\)\*\*', line):
                     ids.add(f"DSG-NRW-§{cur}-{k}")
+
+    # Federal module for companies: ## § N BDSG ; **(k)**
+    bdsg = os.path.join(ref_dir, conv["reference_files"].get("bdsg", ""))
+    if conv["reference_files"].get("bdsg") and os.path.exists(bdsg):
+        cur = None
+        for line in read_text(bdsg).splitlines():
+            m = re.match(r'## § (\d+) BDSG', line)
+            if m:
+                cur = m.group(1); ids.add(f"BDSG-§{cur}"); continue
+            if cur:
+                for k in re.findall(r'\*\*\((\d+)\)\*\*', line):
+                    ids.add(f"BDSG-§{cur}-{k}")
     return ids
 
 # ---------- parse the report ----------
 
-CITE_RE = re.compile(r'\[((?:DSGVO-Art|DSK-OH-|DSG-NRW-§)[^\]]+)\]')
+CITE_RE = re.compile(r'\[((?:DSGVO-Art|DSK-OH-|DSG-NRW-§|BDSG-§)[^\]]+)\]')
 
 def normalize_id(raw):
-    # strip spaces; unify. Accept DSGVO-Art22-1, DSK-OH-1.9, DSG-NRW-§46-1
+    # strip spaces; unify. Accept DSGVO-Art22-1, DSK-OH-1.9, DSG-NRW-§46-1, BDSG-§26-1
     return raw.strip()
 
 def reference_integrity(conv, base):
