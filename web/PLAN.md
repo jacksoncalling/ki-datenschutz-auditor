@@ -2,7 +2,7 @@
 
 **Goal:** a website where **any organisation** that wants to use an AI tool can ask *"Is this vendor okay for what we want to do?"*: say what they want to use it for, upload the vendor's paperwork (or paste links), and get a German pre-check report with every finding tied to a real provision. Kommunen remain a supported option. Built with Lovable, shown publicly as part of Building Out Loud.
 
-**Status (2026-10-23):** the website isn't built yet. The folder is ready for companies: the Einsatzkontext rule and the BDSG module are in (BDSG still to be compared with the official text, see section 2). Files next to this one:
+**Status (2026-10-23):** the website isn't built yet. The folder is ready for companies: the Einsatzkontext rule and the BDSG module are in (BDSG verified against the official text). Files next to this one:
 - `USER_STORIES.md`: what users can do, with acceptance criteria (including **PDF download**, US-6)
 - `LOVABLE_PROMPTS.md`: copy-paste prompts to build it in Lovable
 
@@ -47,7 +47,7 @@ I went through the five checks against the law in `reference/`:
 
 So yes, ask **"Unternehmen oder öffentliche Stelle?"**, but as one question that switches the law module and wording, not two separate products.
 
-**BDSG gap: now closed (provisionally).** `reference/bdsg.md` holds the verbatim BDSG sections a company check needs: § 1(1) and § 2(4) (when the BDSG applies to a company), § 22 (sensitive data), § 26 (employee and applicant data), § 37 (automated decisions), § 38 (when a company must have a DSB; any processing that needs a DSFA triggers it), § 40 (which authority). `checklist.md` ("Ergänzende Ebene") says when each is used, and `checks.py` accepts `[BDSG-§n-k]` citations. **One open item:** the text comes from a mirror of the official site that is current to June 2021, because the official site was blocked from the build environment. Before production, compare the module against gesetze-im-internet.de (a 15-minute job, listed in `reference/SOURCES.md`).
+**BDSG gap: closed.** `reference/bdsg.md` holds the verbatim BDSG sections a company check needs: § 1(1) and § 2(4) (when the BDSG applies to a company), § 22 (sensitive data), § 26 (employee and applicant data), § 37 (automated decisions), § 38 (when a company must have a DSB; any processing that needs a DSFA triggers it), § 40 (which authority). `checklist.md` ("Ergänzende Ebene") says when each is used, and `checks.py` accepts `[BDSG-§n-k]` citations. **Verified:** all 18 Absätze are word for word identical with the official gesetze-im-internet.de text (Stand 12.5.2026); `python audit/verify_bdsg.py` repeats the check.
 
 **Worth knowing for companies, but outside the current standard (possible later modules):** AI tools used on employee data usually need the works council (§ 87 Abs. 1 Nr. 6 BetrVG), and the EU AI Act gives users of AI systems their own obligations (e.g. AI literacy, Art. 4). Don't put these in the check now. Mention them as "nicht Teil dieser Prüfung" so nobody assumes they're covered.
 
@@ -164,7 +164,7 @@ The gates catch form errors (fake citations, missing decisions) whatever the mod
 ### a) Changes in the auditor repo (the source of truth; I can build these)
 1. ✅ **Use-case rule** in `rules.md` + an `Einsatzkontext` line in the report header (section 3).
 2. ✅ **Organisation type** in `rules.md`/`checklist.md`: public body → state module + PS-1 admin-law paragraph; company → BDSG module, admin-law paragraph skipped, company wording.
-3. ✅ **`reference/bdsg.md`**: verbatim BDSG excerpts + `SOURCES.md` entry; `checks.py`/`conventions.json` accept `[BDSG-§n-k]` citation IDs (116 valid IDs). ⏳ Compare against gesetze-im-internet.de.
+3. ✅ **`reference/bdsg.md`**: verbatim BDSG excerpts + `SOURCES.md` entry; `checks.py`/`conventions.json` accept `[BDSG-§n-k]` citation IDs (116 valid IDs). ✅ Verified against the official text.
 4. **One company fixture** with an answer key (e.g. a SaaS AI writing assistant for a mid-size company) to sit next to the three municipal ones.
 5. **`web/export_bundle.py`** → `web/bundle/`: `system-prompt.md`, `valid-ids.json` (116 IDs with the BDSG module), `report.schema.json`, `VERSION`.
 6. **Parity test:** bundle JSON → generated Markdown → `python audit/checks.py` passes.
@@ -189,7 +189,7 @@ The report's natural next step for a company is "and now how do we use this tool
 
 | Step | What | Who | Done when |
 |---|---|---|---|
-| 0 | Repo changes 8a.1–8a.6 (1–3 done) | Claude | bundle exists; company fixture + parity test pass `checks.py`; BDSG compared with the official text |
+| 0 | Repo changes 8a.1–8a.6 (1–3 done) | Claude | bundle exists; company fixture + parity test pass `checks.py` |
 | 1 | Landing page + use-case intake + upload flow, mock data (prompt 1) | you in Lovable | clickable prototype to screen-record |
 | 2 | Auth, database, storage, RLS (prompt 2) | Lovable | two accounts can't see each other's audits |
 | 3 | `run-audit` with Claude (prompt 3) | Lovable + bundle | `01-clean-pass` → 5× CLEAR PASS |
@@ -212,6 +212,6 @@ The report's natural next step for a company is "and now how do we use this tool
 
 - It checks what the **paperwork says**, not what the system **does**.
 - Public website terms can differ from a signed enterprise contract; the report names what it read.
-- Five core checks. Companies: BDSG module provisional until compared with the official text. Public bodies: NRW only so far.
+- Five core checks. Public bodies: NRW only so far.
 - Works council and EU AI Act duties are not part of this check.
 - It's a pre-check that gives the decision-maker a map; the decision stays with them.

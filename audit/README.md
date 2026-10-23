@@ -54,3 +54,7 @@ The answer keys live in `keys/`, **outside `fixtures/`**, so a fixture never car
 Everything configurable lives in `conventions.json`: the reference directory and file names, the valid severities, the required checks, and the open-decision marker. `checks.py` holds no conventions of its own. To run the same eval on, say, a Bayern build, swap the state file in `reference/` and, if needed, edit `conventions.json`. Nothing in the code changes.
 
 See `FINDINGS.md` for the honest read of the first pass, including where this eval is deliberately shallow.
+
+## Checking the BDSG module against the official law
+
+`verify_bdsg.py` compares every Absatz in `reference/bdsg.md` with the official BDSG XML from gesetze-im-internet.de (by default the daily QuantLaw archive of it, because the official site is not reachable from every environment) and prints the official "Stand". Exit 0 if all match. Run it whenever the BDSG may have changed: `python audit/verify_bdsg.py`. Last receipt: `reports/bdsg.verify.md`.

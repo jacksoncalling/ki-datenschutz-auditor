@@ -5,7 +5,7 @@
 **Zustaendige Aufsichtsbehoerde fuer Unternehmen:** siehe § 40 Abs. 1 und 2 BDSG unten. Hinweise zur Anwendung stehen in `checklist.md` ("Ergaenzende Ebene"), nicht in dieser Datei.
 
 > **Quelle (verbatim):** Bundesdatenschutzgesetz vom 30. Juni 2017 (BGBl. I S. 2097), Text aus dem Spiegel der amtlichen Fassung von gesetze-im-internet.de im Repository `bundestag/gesetze`: https://raw.githubusercontent.com/bundestag/gesetze/master/b/bdsg_2018/index.md . Amtlich: https://www.gesetze-im-internet.de/bdsg_2018/ . Abgerufen: 2026-10-23.
-> **Textstand laut Quelle:** zuletzt geaendert durch Art. 12 G v. 20.11.2019 (BGBl. I 1626), Aenderung durch Art. 10 G v. 23.6.2021 (BGBl. I 1858) eingearbeitet. **Vor dem Produktivbetrieb gegen gesetze-im-internet.de abgleichen** (der amtliche Abruf war aus der Build-Umgebung gesperrt; siehe `SOURCES.md`).
+> **Abgleich mit dem amtlichen Text (2026-10-23):** alle 18 abgedruckten Absaetze sind wortgleich mit der amtlichen Fassung von gesetze-im-internet.de, Stand "zuletzt geaendert durch Art. 3 G v. 12.5.2026 I Nr. 139" (Hinweis dort: Aenderung durch Art. 3 G v. 3.7.2026 I Nr. 199 textlich nachgewiesen). Nachpruefen mit `python audit/verify_bdsg.py`; Beleg: `audit/reports/bdsg.verify.md`.
 
 **Zitierweise:** `[BDSG-§<n>-<Absatz>]`, z. B. `[BDSG-§26-1]`, `[BDSG-§38-1]`.
 

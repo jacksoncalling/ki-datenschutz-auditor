@@ -27,7 +27,7 @@ Not a summary. The actual standard, verbatim, so any finding is verifiable:
 - **`reference/dsgvo-artikel.md`**: DSGVO Art. 5, 13, 22, 28, 35, 44 (verbatim).
 - **`reference/dsk-oh-ki.md`**: DSK "Orientierungshilfe KI und Datenschutz" v1.0 (06.05.2024), the cited sections (verbatim).
 - **`reference/dsg-nrw.md`**: the swappable state module for public bodies (currently Nordrhein-Westfalen) plus the competent authority.
-- **`reference/bdsg.md`**: the federal module for companies (Bundesdatenschutzgesetz: employee data, DSB duty, competent authority). *Provisional until compared against gesetze-im-internet.de; see `SOURCES.md`.*
+- **`reference/bdsg.md`**: the federal module for companies (Bundesdatenschutzgesetz: employee data, DSB duty, competent authority). *Checked word for word against the official text (Stand 12.5.2026) with `python audit/verify_bdsg.py`.*
 - **`reference/SOURCES.md`**: where every excerpt came from and how to cross-check it.
 
 ## The five checks (see `checklist.md`)

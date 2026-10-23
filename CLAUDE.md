@@ -20,9 +20,9 @@ Complete and committed locally. NOT yet pushed to GitHub (submission needs a pub
 
 - **Audience widened:** municipalities did not bite; the lead use case is now any company asking "is this AI vendor okay for what we want to use it for?". Kommunen stay supported.
 - **Einsatzkontext** added (`rules.md` step 0): intended use, affected people, Art. 9 data, decisions about people, organisation type, role. Rule: it decides what applies, never that the vendor complies. Report header gains an `Einsatzkontext:` line (optional for `checks.py`).
-- **BDSG module** `reference/bdsg.md` for companies (§ 1(1), § 2(4), § 22, § 26, § 37, § 38, § 40(1-2)), wired into `checklist.md` ("Ergänzende Ebene"), `checks.py` (`[BDSG-§n-k]` IDs; 116 valid IDs now) and `conventions.json`. **Provisional:** sourced from the `bundestag/gesetze` mirror (text as of 23.6.2021) because gesetze-im-internet.de was blocked from the build environment; must be compared against the official site before production (see `reference/SOURCES.md`).
+- **BDSG module** `reference/bdsg.md` for companies (§ 1(1), § 2(4), § 22, § 26, § 37, § 38, § 40(1-2)), wired into `checklist.md` ("Ergänzende Ebene"), `checks.py` (`[BDSG-§n-k]` IDs; 116 valid IDs now) and `conventions.json`. Extracted from the `bundestag/gesetze` mirror, then **verified word for word** against the official gesetze-im-internet.de XML (Stand 12.5.2026, via the QuantLaw daily archive): 18/18 Absätze identical. Re-check with `python audit/verify_bdsg.py`.
 - **Web service plan** in `web/`: `PLAN.md` (architecture: Lovable front end + Supabase + one Claude call with the folder as system prompt + checks.py gates ported), `USER_STORIES.md` (incl. PDF download), `LOVABLE_PROMPTS.md`. Model: Sonnet 5.5 default, Haiku 5.5 to be tested against the fixtures.
-- Next: company fixture + key, `web/export_bundle.py` (system prompt + valid-ids.json + schema), parity test, BDSG verification.
+- Next: company fixture + key, `web/export_bundle.py` (system prompt + valid-ids.json + schema), parity test.
 
 ## Stack
 
@@ -42,7 +42,7 @@ Findings are three classes only: CLEAR PASS / NARROW FLAG / CLEAR FAIL. Citation
 - The auditor: `identity.md`, `rules.md`, `checklist.md`, `examples.md`
 - The standard: `reference/*.md` (+ `reference/SOURCES.md` for provenance); `dsg-nrw.md` for public bodies, `bdsg.md` for companies
 - Web service plan: `web/PLAN.md`, `web/USER_STORIES.md`, `web/LOVABLE_PROMPTS.md`
-- The eval: `audit/checks.py`, `audit/compliance-judge.md`, `audit/conventions.json`
+- The eval: `audit/checks.py`, `audit/compliance-judge.md`, `audit/conventions.json`; `audit/verify_bdsg.py` (BDSG module vs official text)
 - Fixtures/keys/receipts: `audit/fixtures/`, `audit/keys/`, `audit/reports/`
 - Demo: `demo/TEST_METHOD.md`, `demo/dossier.md`, `demo/cold-run/`
 
